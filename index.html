@@ -180,7 +180,6 @@
 
     <!-- 4. Reporter Wallet & Bank Details Section -->
     <section id="walletSection" class="hidden space-y-4">
-      <!-- Wallet Balance Card -->
       <div class="bg-gradient-to-r from-red-700 to-red-800 text-white p-5 rounded-2xl shadow-md">
         <p class="text-xs text-red-200 mb-1">कुल स्वीकृत खबरों की कमाई (Wallet)</p>
         <div class="flex items-baseline space-x-2">
@@ -190,7 +189,6 @@
         <p class="text-xs text-red-200 mt-2"><i class="fa-solid fa-circle-info mr-1"></i> एडमिन द्वारा प्रत्येक स्वीकृत खबर पर तय किया गया मानदेय यहाँ जुड़ता है।</p>
       </div>
 
-      <!-- Bank Details Form -->
       <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
         <h3 class="text-sm font-bold text-gray-900 mb-3 flex items-center space-x-2">
           <i class="fa-solid fa-building-columns text-red-600"></i>
@@ -221,7 +219,6 @@
         </form>
       </div>
 
-      <!-- Reporter Payout History -->
       <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
         <h3 class="text-sm font-bold text-gray-900 mb-3">मेरी स्वीकृत खबरों की कमाई सूची</h3>
         <div id="reporterEarningsHistory" class="divide-y divide-gray-100 text-xs"></div>
@@ -259,7 +256,6 @@
         </div>
       </div>
 
-      <!-- Reporter Bank Details & Total Payable to them -->
       <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
         <h3 class="text-sm font-bold text-gray-800 mb-3">रिपोर्टर्स खाते व कुल मानदेय (Payout Desk)</h3>
         <div id="adminReportersList" class="divide-y divide-gray-100"></div>
@@ -271,20 +267,20 @@
   <script>
     // Firebase Configuration
     const firebaseConfig = {
-      apiKey: "AIzaSyDkTCnl-LkUxYTYBHS",
+      apiKey: "AIzaSyDkTcnl-LkUxYTYBHs_dGoG3zahRl8xHBI",
       authDomain: "awaj-bundelkhand-news.firebaseapp.com",
       databaseURL: "https://awaj-bundelkhand-news-default-rtdb.firebaseio.com",
       projectId: "awaj-bundelkhand-news",
-      storageBucket: "awaj-bundelkhand-news.appspot.com",
+      storageBucket: "awaj-bundelkhand-news.firebasestorage.app",
       messagingSenderId: "105958974098",
-      appId: "1:105958974098:web:40ac7"
+      appId: "1:105958974098:web:40ac74cdec62368120bc4b"
     };
 
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.database();
 
-    // Mukhy Admin Mobile Number
+    // मुख्य एडमिन नंबर
     const ADMIN_PHONE = "+918853252811";
 
     let confirmationResult = null;
@@ -301,7 +297,7 @@
       }
     }
 
-    // OTP bhejein
+    // OTP भेजें
     function sendOTP() {
       const phoneInput = document.getElementById('phoneNumber').value.trim();
       if (phoneInput.length !== 10) {
@@ -329,7 +325,7 @@
         });
     }
 
-    // OTP Verify karein
+    // OTP सत्यापित करें
     function verifyOTP() {
       const code = document.getElementById('verificationCode').value.trim();
       if (code.length < 6) {
@@ -360,7 +356,7 @@
       auth.signOut().then(() => location.reload());
     }
 
-    // Roles aur UI Setup
+    // रोल चेक और UI सेटअप
     async function checkUserRolesAndInit(user) {
       const phone = user.phoneNumber;
       isUserAdmin = (phone === ADMIN_PHONE);
@@ -403,7 +399,7 @@
       }
     }
 
-    // Realtime News & Wallet Data Listeners
+    // रियल-टाइम लिसनर्स
     function startRealtimeListeners() {
       db.ref('news_articles').on('value', (snapshot) => {
         const data = snapshot.val();
@@ -471,7 +467,6 @@
               <p class="text-xs text-gray-600 mb-2 whitespace-pre-line">${item.content}</p>
               <div class="text-xs text-gray-500 mb-3">प्रेषक: <b>${item.reporter}</b> (${item.senderPhone})</div>
 
-              <!-- Admin Payment Input Field per news -->
               <div class="bg-gray-50 p-2.5 rounded-lg border border-gray-200 mb-3">
                 <label class="block text-xs font-bold text-gray-700 mb-1">इस खबर का मानदेय राशि (रुपये में):</label>
                 <div class="flex items-center">
@@ -499,7 +494,7 @@
       if (pendingCount === 0 && isUserAdmin) adminContainer.innerHTML = '<p class="text-center text-gray-500 py-6 text-sm">समीक्षा के लिए कोई खबर लंबित नहीं है।</p>';
     }
 
-    // Reporter Wallet Calculation
+    // वॉलेट कैलकुलेशन
     function calculateReporterWallet(data, userPhone) {
       if (!data) return;
       let total = 0;
@@ -531,7 +526,7 @@
       }
     }
 
-    // Reporter submit news
+    // रिपोर्टर खबर सबमिट
     async function submitNews(e) {
       e.preventDefault();
       const submitBtn = document.getElementById('btnSubmitNews');
@@ -565,7 +560,7 @@
       }
     }
 
-    // Admin News Approval with Payout Amount
+    // एडमिन मंज़ूरी व मानदेय
     function approveNewsWithPayout(id) {
       if (!isUserAdmin) return;
       const payoutInput = document.getElementById(`payout_${id}`);
@@ -586,7 +581,7 @@
       });
     }
 
-    // Save Reporter Bank Details
+    // बैंक विवरण सेव करें
     async function saveBankDetails(e) {
       e.preventDefault();
       if (!currentUser) return;
@@ -605,7 +600,6 @@
       alert("बैंक विवरण सुरक्षित रूप से सेव कर दिया गया है!");
     }
 
-    // Load Reporter Bank Details in Form
     function loadReporterBankDetails() {
       if (!currentUser) return;
       const safePhone = currentUser.phoneNumber.replace('+', '');
@@ -620,7 +614,7 @@
       });
     }
 
-    // Admin Manage Reporters and View Their Bank Details
+    // एडमिन रिपोर्टर जोड़ना
     function addAuthorizedReporter() {
       if (!isUserAdmin) return;
       const name = document.getElementById('newReporterName').value.trim();
@@ -665,7 +659,6 @@
         const safePhone = rep.phone.replace('+', '');
         const bank = banks[safePhone] || {};
 
-        // Calculate total earning of this reporter
         let totalDue = 0;
         Object.keys(news).forEach(nKey => {
           const item = news[nKey];
@@ -702,7 +695,6 @@
       }
     }
 
-    // Tab Navigation
     function switchTab(tab) {
       ['feed', 'reporter', 'wallet', 'admin', 'manageReporters'].forEach(t => {
         const sec = document.getElementById(t + 'Section');
@@ -723,7 +715,6 @@
       }
     }
 
-    // Authentication State
     auth.onAuthStateChanged((user) => {
       if (user) {
         currentUser = user;
