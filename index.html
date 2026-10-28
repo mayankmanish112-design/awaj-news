@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Awaaz Bundelkhand News - Live & Reporter Wallet</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Firebase Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+</head>
+<body class="bg-gray-100 font-sans text-gray-800 antialiased min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <header class="bg-red-700 text-white shadow sticky top-0 z-50">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 bg-white text-red-700 font-black text-xl rounded-full flex items-center justify-center shadow">
+          आ
+        </div>
+        <div>
+          <h1 class="text-xl font-bold tracking-tight">आवाज़ बुंदेलखंड न्यूज़</h1>
+          <p class="text-xs text-red-100">सत्य, साहस और सटीक निष्पक्षता</p>
+        </div>
+      </div>
+      <div id="userBadge" class="hidden flex items-center space-x-2">
+        <span id="userRoleBadge" class="text-xs px-2 py-0.5 rounded-full font-bold"></span>
+        <button onclick="handleLogout()" class="text-xs bg-white text-red-700 px-2.5 py-1 rounded font-semibold hover:bg-gray-100">लॉगआउट</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <nav id="appNavigation" class="hidden bg-white border-b border-gray-200">
+    <div class="max-w-4xl mx-auto flex justify-around text-xs md:text-sm font-medium overflow-x-auto">
+      <button onclick="switchTab('feed')" id="tabFeed" class="py-3 px-3 border-b-2 border-red-700 text-red-700 flex items-center space-x-1 whitespace-nowrap">
+        <i class="fa-solid fa-newspaper"></i> <span>लाइव खबरें</span>
+      </button>
+      <button onclick="switchTab('reporter')" id="tabReporter" class="py-3 px-3 border-b-2 border-transparent text-gray-600 hover:text-red-700 flex items-center space-x-1 whitespace-nowrap">
+        <i class="fa-solid fa-pen-to-square"></i> <span>खबर भेजें</span>
+      </button>
+      <button onclick="switchTab('wallet')" id="tabWallet" class="hidden py-3 px-3 border-b-2 border-transparent text-gray-600 hover:text-red-700 flex items-center space-x-1 whitespace-nowrap">
+        <i class="fa-solid fa-wallet"></i> <span>मेरी कमाई व बैंक</span>
+      </button>
+      <button onclick="switchTab('admin')" id="tabAdmin" class="hidden py-3 px-3 border-b-2 border-transparent text-gray-600 hover:text-red-700 flex items-center space-x-1 whitespace-nowrap">
+        <i class="fa-solid fa-shield-halved"></i> <span>एडमिन डेस्क</span>
+      </button>
+      <button onclick="switchTab('manageReporters')" id="tabManageReporters" class="hidden py-3 px-3 border-b-2 border-transparent text-gray-600 hover:text-red-700 flex items-center space-x-1 whitespace-nowrap">
+        <i class="fa-solid fa-users-gear"></i> <span>रिपोर्टर व पेआउट</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Content Area -->
+  <main class="max-w-4xl mx-auto p-4 flex-grow w-full">
+
+    <!-- 1. OTP Login Screen -->
+    <section id="loginSection" class="max-w-md mx-auto my-8 bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+      <div class="text-center mb-6">
+        <div class="inline-flex p-3 bg-red-50 text-red-600 rounded-full mb-2">
+          <i class="fa-solid fa-shield-cat text-2xl"></i>
+        </div>
+        <h2 class="text-xl font-bold text-gray-900">सुरक्षित OTP लॉगिन</h2>
+        <p class="text-xs text-gray-500 mt-1">अपने मोबाइल नंबर पर OTP प्राप्त करके पोर्टल खोलें</p>
+      </div>
+
+      <div id="stepPhoneInput">
+        <label class="block text-xs font-semibold text-gray-700 mb-1">मोबाइल नंबर (10 अंक)</label>
+        <div class="flex items-center border border-gray-300 rounded-lg overflow-hidden mb-4 focus-within:ring-2 focus-within:ring-red-600">
+          <span class="bg-gray-100 text-gray-600 px-3 py-2 text-sm font-semibold border-r">+91</span>
+          <input type="tel" id="phoneNumber" placeholder="9876543210" maxlength="10" class="w-full px-3 py-2 text-sm outline-none">
+        </div>
+        <div id="recaptcha-container" class="mb-4 flex justify-center"></div>
+        <button onclick="sendOTP()" id="btnSendOtp" class="w-full bg-red-700 text-white py-2.5 rounded-lg font-medium hover:bg-red-800 transition text-sm flex items-center justify-center space-x-2">
+          <span>OTP प्राप्त करें</span>
+          <i class="fa-solid fa-paper-plane text-xs"></i>
+        </button>
+      </div>
+
+      <div id="stepOtpInput" class="hidden">
+        <p class="text-xs text-green-700 bg-green-50 p-2.5 rounded-lg mb-3">
+          <i class="fa-solid fa-check-circle mr-1"></i> SMS द्वारा 6-अंकों का OTP भेजा गया है।
+        </p>
+        <label class="block text-xs font-semibold text-gray-700 mb-1">OTP कोड दर्ज करें</label>
+        <input type="number" id="verificationCode" placeholder="123456" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-center text-lg tracking-widest font-bold mb-4 outline-none focus:ring-2 focus:ring-red-600">
+        <button onclick="verifyOTP()" id="btnVerifyOtp" class="w-full bg-green-600 text-white py-2.5 rounded-lg font-medium hover:bg-green-700 transition text-sm">
+          सत्यापित करें और ऐप खोलें
+        </button>
+        <button onclick="resetLoginForm()" class="w-full mt-2 text-xs text-gray-500 hover:underline">दूसरा नंबर डालें</button>
+      </div>
+    </section>
+
+    <!-- 2. Live Public Feed -->
+    <section id="feedSection" class="hidden space-y-4">
+      <div class="flex items-center justify-between pb-2 border-b">
+        <h2 class="text-lg font-bold text-gray-800 flex items-center">
+          <span class="w-2.5 h-2.5 bg-green-500 rounded-full animate-ping mr-2"></span>
+          लाइव व ताज़ा खबरें
+        </h2>
+        <span class="text-xs text-gray-400">एडमिन द्वारा सत्यापित</span>
+      </div>
+      <div id="liveNewsContainer" class="space-y-4"></div>
+    </section>
+
+    <!-- 3. Reporter News Submission Desk -->
+    <section id="reporterSection" class="hidden bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+      <div id="reporterAccessAllowed">
+        <h2 class="text-lg font-bold text-gray-900 border-b pb-3 mb-4 flex items-center space-x-2">
+          <i class="fa-solid fa-feather text-red-600"></i>
+          <span>संपादकीय खबर सबमिट डेस्क</span>
+        </h2>
+
+        <form id="newsForm" onsubmit="submitNews(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">संवाददाता का नाम *</label>
+            <input type="text" id="reporterName" required placeholder="अपना पूरा नाम दर्ज करें" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-red-600">
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-gray-700 mb-1">स्थान (गाँव / तहसील / ज़िला) *</label>
+              <input type="text" id="newsLocation" required placeholder="उदा. सरीला, हमीरपुर" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-red-600">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-700 mb-1">श्रेणी (Category) *</label>
+              <select id="newsCategory" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-red-600">
+                <option value="स्थानीय समाचार">स्थानीय समाचार</option>
+                <option value="विकास / जनसमस्या">विकास / जनसमस्या</option>
+                <option value="अपराध व कानून व्यवस्था">अपराध व कानून व्यवस्था</option>
+                <option value="राजनीति व चुनाव">राजनीति व चुनाव</option>
+                <option value="कृषि व मौसम">कृषि व मौसम</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">खबर का शीर्षक (Headline) *</label>
+            <input type="text" id="newsHeadline" required placeholder="आकर्षक व संक्षिप्त हेडलाइन" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-red-600">
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">खबर का पूरा विवरण *</label>
+            <textarea id="newsContent" rows="4" required placeholder="पूरी खबर का विवरण यहाँ लिखें..." class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-red-600"></textarea>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-gray-700 mb-1">फोटो लिंक (Image URL)</label>
+              <input type="url" id="newsImageUrl" placeholder="https://..." class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-red-600">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-700 mb-1">वीडियो लिंक (YouTube / Video URL)</label>
+              <input type="url" id="newsVideoUrl" placeholder="https://youtube.com/..." class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-red-600">
+            </div>
+          </div>
+
+          <button type="submit" id="btnSubmitNews" class="w-full bg-red-700 text-white font-medium py-2.5 rounded-lg text-sm hover:bg-red-800 transition flex items-center justify-center space-x-2">
+            <i class="fa-solid fa-paper-plane"></i>
+            <span>एडमिन डेस्क को समीक्षा हेतु भेजें</span>
+          </button>
+        </form>
+      </div>
+
+      <div id="reporterAccessDenied" class="hidden text-center py-10">
+        <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-3">
+          <i class="fa-solid fa-lock text-2xl"></i>
+        </div>
+        <h3 class="text-base font-bold text-gray-900 mb-1">खबर भेजने की अनुमति नहीं है</h3>
+        <p class="text-xs text-gray-500 max-w-sm mx-auto">
+          आपका नंबर अधिकृत रिपोर्टर सूची में पंजीकृत नहीं है। एडमिन (+918853252811) से अनुमति प्राप्त करें।
+        </p>
+      </div>
+    </section>
+
+    <!-- 4. Reporter Wallet & Bank Details Section -->
+    <section id="walletSection" class="hidden space-y-4">
+      <!-- Wallet Balance Card -->
+      <div class="bg-gradient-to-r from-red-700 to-red-800 text-white p-5 rounded-2xl shadow-md">
+        <p class="text-xs text-red-200 mb-1">कुल स्वीकृत खबरों की कमाई (Wallet)</p>
+        <div class="flex items-baseline space-x-2">
+          <span class="text-3xl font-extrabold" id="reporterTotalEarning">₹0</span>
+          <span class="text-xs text-red-200">स्वीकृत खबरों से</span>
+        </div>
+        <p class="text-xs text-red-200 mt-2"><i class="fa-solid fa-circle-info mr-1"></i> एडमिन द्वारा प्रत्येक स्वीकृत खबर पर तय किया गया मानदेय यहाँ जुड़ता है।</p>
+      </div>
+
+      <!-- Bank Details Form -->
+      <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
+        <h3 class="text-sm font-bold text-gray-900 mb-3 flex items-center space-x-2">
+          <i class="fa-solid fa-building-columns text-red-600"></i>
+          <span>बैंक खाता / UPI विवरण जोड़ें</span>
+        </h3>
+        <form id="bankDetailsForm" onsubmit="saveBankDetails(event)" class="space-y-3">
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">खाताधारक का नाम *</label>
+            <input type="text" id="bankHolderName" required placeholder="बैंक पासबुक के अनुसार नाम" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-red-600">
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-gray-700 mb-1">बैंक खाता नंबर (Account Number)</label>
+              <input type="text" id="bankAccountNumber" placeholder="उदा. 1234567890" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-red-600">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-700 mb-1">IFSC कोड</label>
+              <input type="text" id="bankIfsc" placeholder="उदा. SBIN0001234" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none uppercase focus:border-red-600">
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">UPI ID (वैकल्पिक)</label>
+            <input type="text" id="bankUpi" placeholder="उदा. yourname@upi" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-red-600">
+          </div>
+          <button type="submit" id="btnSaveBank" class="w-full bg-green-600 text-white text-xs font-bold py-2.5 rounded-lg hover:bg-green-700">
+            बैंक विवरण सेव करें
+          </button>
+        </form>
+      </div>
+
+      <!-- Reporter Payout History -->
+      <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
+        <h3 class="text-sm font-bold text-gray-900 mb-3">मेरी स्वीकृत खबरों की कमाई सूची</h3>
+        <div id="reporterEarningsHistory" class="divide-y divide-gray-100 text-xs"></div>
+      </div>
+    </section>
+
+    <!-- 5. Admin Review Dashboard (Admin Only) -->
+    <section id="adminSection" class="hidden space-y-4">
+      <div class="flex items-center justify-between pb-2 border-b">
+        <h2 class="text-lg font-bold text-gray-800 flex items-center space-x-2">
+          <i class="fa-solid fa-shield-halved text-red-600"></i>
+          <span>लंबित समीक्षाएँ (Pending Approvals)</span>
+        </h2>
+        <span id="pendingCount" class="text-xs bg-yellow-100 text-yellow-800 font-bold px-2 py-0.5 rounded-full">0 लंबित</span>
+      </div>
+      <div id="adminReviewContainer" class="space-y-4"></div>
+    </section>
+
+    <!-- 6. Admin Manage Reporters & Bank Payouts (Admin Only) -->
+    <section id="manageReportersSection" class="hidden space-y-4">
+      <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
+        <h2 class="text-base font-bold text-gray-900 mb-3 flex items-center space-x-2">
+          <i class="fa-solid fa-user-plus text-red-600"></i>
+          <span>नया रिपोर्टर जोड़ें (Mobile Whitelist)</span>
+        </h2>
+        <div class="flex flex-col sm:flex-row gap-2">
+          <input type="text" id="newReporterName" placeholder="रिपोर्टर का नाम" class="border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none flex-1">
+          <div class="flex items-center border border-gray-300 rounded-lg overflow-hidden flex-1">
+            <span class="bg-gray-100 px-3 py-2 text-xs text-gray-600 border-r">+91</span>
+            <input type="tel" id="newReporterPhone" placeholder="10-अंकों का नंबर" maxlength="10" class="w-full px-3 py-2 text-sm outline-none">
+          </div>
+          <button onclick="addAuthorizedReporter()" class="bg-green-600 text-white text-xs font-semibold px-4 py-2.5 rounded-lg hover:bg-green-700">
+            जोड़ें
+          </button>
+        </div>
+      </div>
+
+      <!-- Reporter Bank Details & Total Payable to them -->
+      <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
+        <h3 class="text-sm font-bold text-gray-800 mb-3">रिपोर्टर्स खाते व कुल मानदेय (Payout Desk)</h3>
+        <div id="adminReportersList" class="divide-y divide-gray-100"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDkTCnl-LkUxYTYBHS",
+      authDomain: "awaj-bundelkhand-news.firebaseapp.com",
+      databaseURL: "https://awaj-bundelkhand-news-default-rtdb.firebaseio.com",
+      projectId: "awaj-bundelkhand-news",
+      storageBucket: "awaj-bundelkhand-news.appspot.com",
+      messagingSenderId: "105958974098",
+      appId: "1:105958974098:web:40ac7"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    // Mukhy Admin Mobile Number
+    const ADMIN_PHONE = "+918853252811";
+
+    let confirmationResult = null;
+    let currentUser = null;
+    let isUserAdmin = false;
+    let isUserReporter = false;
+
+    // reCAPTCHA
+    function initRecaptcha() {
+      if (!window.recaptchaVerifier) {
+        window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+          'size': 'invisible'
+        });
+      }
+    }
+
+    // OTP bhejein
+    function sendOTP() {
+      const phoneInput = document.getElementById('phoneNumber').value.trim();
+      if (phoneInput.length !== 10) {
+        alert("कृपया सही 10 अंकों का मोबाइल नंबर दर्ज करें।");
+        return;
+      }
+      const fullPhoneNumber = "+91" + phoneInput;
+      const btn = document.getElementById('btnSendOtp');
+      btn.innerText = "OTP भेजा जा रहा है...";
+      btn.disabled = true;
+
+      initRecaptcha();
+
+      auth.signInWithPhoneNumber(fullPhoneNumber, window.recaptchaVerifier)
+        .then((result) => {
+          confirmationResult = result;
+          document.getElementById('stepPhoneInput').classList.add('hidden');
+          document.getElementById('stepOtpInput').classList.remove('hidden');
+          btn.innerText = "OTP प्राप्त करें";
+          btn.disabled = false;
+        }).catch((error) => {
+          alert("OTP त्रुटि: " + error.message);
+          btn.innerText = "OTP प्राप्त करें";
+          btn.disabled = false;
+        });
+    }
+
+    // OTP Verify karein
+    function verifyOTP() {
+      const code = document.getElementById('verificationCode').value.trim();
+      if (code.length < 6) {
+        alert("कृपया 6 अंकों का OTP दर्ज करें।");
+        return;
+      }
+      const btn = document.getElementById('btnVerifyOtp');
+      btn.innerText = "सत्यापित हो रहा है...";
+      btn.disabled = true;
+
+      confirmationResult.confirm(code)
+        .then((result) => {
+          currentUser = result.user;
+          checkUserRolesAndInit(currentUser);
+        }).catch((error) => {
+          alert("गलत OTP कोड!");
+          btn.innerText = "सत्यापित करें और ऐप खोलें";
+          btn.disabled = false;
+        });
+    }
+
+    function resetLoginForm() {
+      document.getElementById('stepOtpInput').classList.add('hidden');
+      document.getElementById('stepPhoneInput').classList.remove('hidden');
+    }
+
+    function handleLogout() {
+      auth.signOut().then(() => location.reload());
+    }
+
+    // Roles aur UI Setup
+    async function checkUserRolesAndInit(user) {
+      const phone = user.phoneNumber;
+      isUserAdmin = (phone === ADMIN_PHONE);
+
+      const snapshot = await db.ref('authorized_reporters').orderByChild('phone').equalTo(phone).once('value');
+      isUserReporter = snapshot.exists() || isUserAdmin;
+
+      document.getElementById('loginSection').classList.add('hidden');
+      document.getElementById('appNavigation').classList.remove('hidden');
+      document.getElementById('userBadge').classList.remove('hidden');
+
+      const roleBadge = document.getElementById('userRoleBadge');
+      if (isUserAdmin) {
+        roleBadge.innerText = "मुख्य एडमिन";
+        roleBadge.className = "text-xs px-2 py-0.5 rounded-full font-bold bg-yellow-400 text-gray-900";
+        document.getElementById('tabAdmin').classList.remove('hidden');
+        document.getElementById('tabManageReporters').classList.remove('hidden');
+      } else if (isUserReporter) {
+        roleBadge.innerText = "अधिकृत रिपोर्टर";
+        roleBadge.className = "text-xs px-2 py-0.5 rounded-full font-bold bg-green-500 text-white";
+        document.getElementById('tabWallet').classList.remove('hidden');
+      } else {
+        roleBadge.innerText = "पाठक (User)";
+        roleBadge.className = "text-xs px-2 py-0.5 rounded-full font-bold bg-blue-500 text-white";
+      }
+
+      if (isUserReporter) {
+        document.getElementById('reporterAccessAllowed').classList.remove('hidden');
+        document.getElementById('reporterAccessDenied').classList.add('hidden');
+        loadReporterBankDetails();
+      } else {
+        document.getElementById('reporterAccessAllowed').classList.add('hidden');
+        document.getElementById('reporterAccessDenied').classList.remove('hidden');
+      }
+
+      switchTab('feed');
+      startRealtimeListeners();
+      if (isUserAdmin) {
+        loadReportersAndPayoutList();
+      }
+    }
+
+    // Realtime News & Wallet Data Listeners
+    function startRealtimeListeners() {
+      db.ref('news_articles').on('value', (snapshot) => {
+        const data = snapshot.val();
+        renderNewsArticles(data);
+        if (currentUser) {
+          calculateReporterWallet(data, currentUser.phoneNumber);
+        }
+      });
+    }
+
+    function renderNewsArticles(data) {
+      const liveContainer = document.getElementById('liveNewsContainer');
+      const adminContainer = document.getElementById('adminReviewContainer');
+      liveContainer.innerHTML = '';
+      adminContainer.innerHTML = '';
+
+      if (!data) {
+        liveContainer.innerHTML = '<p class="text-center text-gray-500 py-6 text-sm">अभी कोई स्वीकृत खबर उपलब्ध नहीं है।</p>';
+        adminContainer.innerHTML = '<p class="text-center text-gray-500 py-6 text-sm">कोई खबर समीक्षा के लिए लंबित नहीं है।</p>';
+        document.getElementById('pendingCount').innerText = '0 लंबित';
+        return;
+      }
+
+      let pendingCount = 0;
+      let liveCount = 0;
+      const items = Object.keys(data).map(key => ({ id: key, ...data[key] })).reverse();
+
+      items.forEach(item => {
+        if (item.status === 'approved') {
+          liveCount++;
+          const card = document.createElement('div');
+          card.className = "bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden";
+          card.innerHTML = `
+            ${item.imageUrl ? `<img src="${item.imageUrl}" class="w-full h-52 object-cover" onerror="this.style.display='none'">` : ''}
+            <div class="p-4">
+              <div class="flex items-center justify-between text-xs text-gray-500 mb-2">
+                <span class="bg-red-50 text-red-700 px-2.5 py-0.5 rounded font-semibold">${item.category}</span>
+                <span><i class="fa-solid fa-location-dot mr-1"></i>${item.location}</span>
+              </div>
+              <h3 class="text-base font-bold text-gray-900 leading-snug mb-2">${item.headline}</h3>
+              <p class="text-sm text-gray-700 whitespace-pre-line leading-relaxed mb-3">${item.content}</p>
+              ${item.videoUrl ? `
+                <a href="${item.videoUrl}" target="_blank" class="inline-flex items-center text-xs text-red-600 font-semibold mb-3 bg-red-50 px-2.5 py-1 rounded hover:bg-red-100">
+                  <i class="fa-brands fa-youtube text-base mr-1.5"></i> वीडियो देखें
+                </a>
+              ` : ''}
+              <div class="text-xs text-gray-400 border-t pt-2 flex justify-between">
+                <span>संवाददाता: ${item.reporter}</span>
+                <span>${new Date(item.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+              </div>
+            </div>
+          `;
+          liveContainer.appendChild(card);
+        } else if (item.status === 'pending') {
+          pendingCount++;
+          if (isUserAdmin) {
+            const card = document.createElement('div');
+            card.className = "bg-white rounded-xl p-4 border border-yellow-200 shadow-sm";
+            card.innerHTML = `
+              <div class="flex justify-between items-start mb-2">
+                <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-0.5 rounded font-medium">समीक्षा लंबित</span>
+                <span class="text-xs text-gray-400">${item.location}</span>
+              </div>
+              <h4 class="font-bold text-gray-900 text-sm mb-1">${item.headline}</h4>
+              <p class="text-xs text-gray-600 mb-2 whitespace-pre-line">${item.content}</p>
+              <div class="text-xs text-gray-500 mb-3">प्रेषक: <b>${item.reporter}</b> (${item.senderPhone})</div>
+
+              <!-- Admin Payment Input Field per news -->
+              <div class="bg-gray-50 p-2.5 rounded-lg border border-gray-200 mb-3">
+                <label class="block text-xs font-bold text-gray-700 mb-1">इस खबर का मानदेय राशि (रुपये में):</label>
+                <div class="flex items-center">
+                  <span class="text-xs font-bold text-gray-500 mr-2">₹</span>
+                  <input type="number" id="payout_${item.id}" value="50" min="0" class="border border-gray-300 rounded px-2 py-1 text-xs w-28 font-bold text-green-700 outline-none">
+                </div>
+              </div>
+
+              <div class="flex space-x-2 border-t pt-3">
+                <button onclick="approveNewsWithPayout('${item.id}')" class="flex-1 bg-green-600 text-white text-xs py-2 rounded-lg font-medium hover:bg-green-700">
+                  <i class="fa-solid fa-check mr-1"></i> मंज़ूर व मानदेय क्रेडिट करें
+                </button>
+                <button onclick="updateNewsStatus('${item.id}', 'rejected', 0)" class="flex-1 bg-red-100 text-red-700 text-xs py-2 rounded-lg font-medium hover:bg-red-200">
+                  <i class="fa-solid fa-xmark mr-1"></i> अस्वीकार करें
+                </button>
+              </div>
+            `;
+            adminContainer.appendChild(card);
+          }
+        }
+      });
+
+      document.getElementById('pendingCount').innerText = `${pendingCount} लंबित`;
+      if (liveCount === 0) liveContainer.innerHTML = '<p class="text-center text-gray-500 py-6 text-sm">अभी कोई खबर लाइव नहीं है।</p>';
+      if (pendingCount === 0 && isUserAdmin) adminContainer.innerHTML = '<p class="text-center text-gray-500 py-6 text-sm">समीक्षा के लिए कोई खबर लंबित नहीं है।</p>';
+    }
+
+    // Reporter Wallet Calculation
+    function calculateReporterWallet(data, userPhone) {
+      if (!data) return;
+      let total = 0;
+      const historyContainer = document.getElementById('reporterEarningsHistory');
+      historyContainer.innerHTML = '';
+
+      Object.keys(data).forEach(key => {
+        const item = data[key];
+        if (item.senderPhone === userPhone && item.status === 'approved') {
+          const payout = Number(item.payoutAmount || 0);
+          total += payout;
+
+          const row = document.createElement('div');
+          row.className = "py-2.5 flex justify-between items-center";
+          row.innerHTML = `
+            <div>
+              <p class="font-semibold text-gray-800 line-clamp-1">${item.headline}</p>
+              <p class="text-gray-400 text-[10px]">${new Date(item.timestamp).toLocaleDateString()}</p>
+            </div>
+            <span class="font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded">+ ₹${payout}</span>
+          `;
+          historyContainer.appendChild(row);
+        }
+      });
+
+      document.getElementById('reporterTotalEarning').innerText = `₹${total}`;
+      if (total === 0) {
+        historyContainer.innerHTML = '<p class="text-xs text-gray-400 py-2">अभी तक कोई मानदेय क्रेडिट नहीं हुआ है।</p>';
+      }
+    }
+
+    // Reporter submit news
+    async function submitNews(e) {
+      e.preventDefault();
+      const submitBtn = document.getElementById('btnSubmitNews');
+      submitBtn.disabled = true;
+      submitBtn.innerText = "भेजा जा रहा है...";
+
+      const newPost = {
+        reporter: document.getElementById('reporterName').value.trim(),
+        location: document.getElementById('newsLocation').value.trim(),
+        category: document.getElementById('newsCategory').value,
+        headline: document.getElementById('newsHeadline').value.trim(),
+        content: document.getElementById('newsContent').value.trim(),
+        imageUrl: document.getElementById('newsImageUrl').value.trim(),
+        videoUrl: document.getElementById('newsVideoUrl').value.trim(),
+        senderPhone: currentUser ? currentUser.phoneNumber : '',
+        status: 'pending',
+        payoutAmount: 0,
+        timestamp: Date.now()
+      };
+
+      try {
+        await db.ref('news_articles').push(newPost);
+        alert("खबर सफलता पूर्वक भेज दी गई है! एडमिन की मंज़ूरी के बाद मानदेय खाते में जुड़ेगा।");
+        document.getElementById('newsForm').reset();
+        switchTab('feed');
+      } catch (err) {
+        alert("त्रुटि: " + err.message);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane mr-1"></i> <span>एडमिन डेस्क को समीक्षा हेतु भेजें</span>';
+      }
+    }
+
+    // Admin News Approval with Payout Amount
+    function approveNewsWithPayout(id) {
+      if (!isUserAdmin) return;
+      const payoutInput = document.getElementById(`payout_${id}`);
+      const amount = Number(payoutInput ? payoutInput.value : 0);
+
+      db.ref('news_articles/' + id).update({
+        status: 'approved',
+        payoutAmount: amount,
+        approvedAt: Date.now()
+      });
+    }
+
+    function updateNewsStatus(id, newStatus, amount) {
+      if (!isUserAdmin) return;
+      db.ref('news_articles/' + id).update({
+        status: newStatus,
+        payoutAmount: amount || 0
+      });
+    }
+
+    // Save Reporter Bank Details
+    async function saveBankDetails(e) {
+      e.preventDefault();
+      if (!currentUser) return;
+
+      const safePhone = currentUser.phoneNumber.replace('+', '');
+      const bankData = {
+        holderName: document.getElementById('bankHolderName').value.trim(),
+        accountNumber: document.getElementById('bankAccountNumber').value.trim(),
+        ifsc: document.getElementById('bankIfsc').value.trim(),
+        upi: document.getElementById('bankUpi').value.trim(),
+        phone: currentUser.phoneNumber,
+        updatedAt: Date.now()
+      };
+
+      await db.ref('reporter_bank_accounts/' + safePhone).set(bankData);
+      alert("बैंक विवरण सुरक्षित रूप से सेव कर दिया गया है!");
+    }
+
+    // Load Reporter Bank Details in Form
+    function loadReporterBankDetails() {
+      if (!currentUser) return;
+      const safePhone = currentUser.phoneNumber.replace('+', '');
+      db.ref('reporter_bank_accounts/' + safePhone).once('value', (snapshot) => {
+        const val = snapshot.val();
+        if (val) {
+          document.getElementById('bankHolderName').value = val.holderName || '';
+          document.getElementById('bankAccountNumber').value = val.accountNumber || '';
+          document.getElementById('bankIfsc').value = val.ifsc || '';
+          document.getElementById('bankUpi').value = val.upi || '';
+        }
+      });
+    }
+
+    // Admin Manage Reporters and View Their Bank Details
+    function addAuthorizedReporter() {
+      if (!isUserAdmin) return;
+      const name = document.getElementById('newReporterName').value.trim();
+      const phoneInput = document.getElementById('newReporterPhone').value.trim();
+
+      if (!name || phoneInput.length !== 10) {
+        alert("कृपया नाम और 10 अंकों का नंबर दर्ज करें।");
+        return;
+      }
+
+      const phone = "+91" + phoneInput;
+      db.ref('authorized_reporters').push({
+        name: name,
+        phone: phone,
+        addedAt: Date.now()
+      });
+
+      document.getElementById('newReporterName').value = '';
+      document.getElementById('newReporterPhone').value = '';
+      alert(`रिपोर्टर ${name} को जोड़ा गया!`);
+    }
+
+    function loadReportersAndPayoutList() {
+      db.ref('authorized_reporters').on('value', (snapRep) => {
+        const reporters = snapRep.val() || {};
+        db.ref('reporter_bank_accounts').on('value', (snapBank) => {
+          const banks = snapBank.val() || {};
+          db.ref('news_articles').on('value', (snapNews) => {
+            const news = snapNews.val() || {};
+            renderAdminPayoutTable(reporters, banks, news);
+          });
+        });
+      });
+    }
+
+    function renderAdminPayoutTable(reporters, banks, news) {
+      const container = document.getElementById('adminReportersList');
+      container.innerHTML = '';
+
+      Object.keys(reporters).forEach(key => {
+        const rep = reporters[key];
+        const safePhone = rep.phone.replace('+', '');
+        const bank = banks[safePhone] || {};
+
+        // Calculate total earning of this reporter
+        let totalDue = 0;
+        Object.keys(news).forEach(nKey => {
+          const item = news[nKey];
+          if (item.senderPhone === rep.phone && item.status === 'approved') {
+            totalDue += Number(item.payoutAmount || 0);
+          }
+        });
+
+        const card = document.createElement('div');
+        card.className = "py-3 text-xs border-b border-gray-100 flex flex-col md:flex-row justify-between md:items-center gap-2";
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center space-x-2">
+              <span class="font-bold text-gray-900 text-sm">${rep.name}</span>
+              <span class="text-gray-500 font-mono">(${rep.phone})</span>
+            </div>
+            <p class="text-gray-600 mt-1">
+              <b>खाता:</b> ${bank.accountNumber || 'दर्ज नहीं'} | <b>IFSC:</b> ${bank.ifsc || 'N/A'} | <b>UPI:</b> ${bank.upi || 'N/A'}
+            </p>
+          </div>
+          <div class="flex items-center justify-between md:justify-end space-x-3">
+            <span class="text-xs bg-green-50 text-green-700 font-bold px-2.5 py-1 rounded">कुल मानदेय: ₹${totalDue}</span>
+            <button onclick="removeReporter('${key}')" class="text-red-500 hover:text-red-700 font-semibold">हटाएँ</button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function removeReporter(key) {
+      if (!isUserAdmin) return;
+      if (confirm("क्या आप वाकई इस रिपोर्टर को हटाना चाहते हैं?")) {
+        db.ref('authorized_reporters/' + key).remove();
+      }
+    }
+
+    // Tab Navigation
+    function switchTab(tab) {
+      ['feed', 'reporter', 'wallet', 'admin', 'manageReporters'].forEach(t => {
+        const sec = document.getElementById(t + 'Section');
+        if (sec) sec.classList.add('hidden');
+        const b = document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1));
+        if (b) {
+          b.classList.remove('border-red-700', 'text-red-700');
+          b.classList.add('border-transparent', 'text-gray-600');
+        }
+      });
+
+      const activeSec = document.getElementById(tab + 'Section');
+      if (activeSec) activeSec.classList.remove('hidden');
+      const activeBtn = document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1));
+      if (activeBtn) {
+        activeBtn.classList.add('border-red-700', 'text-red-700');
+        activeBtn.classList.remove('border-transparent', 'text-gray-600');
+      }
+    }
+
+    // Authentication State
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        currentUser = user;
+        checkUserRolesAndInit(user);
+      }
+    });
+  </script>
+</body>
+</html>
