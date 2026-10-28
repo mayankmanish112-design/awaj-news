@@ -8,60 +8,778 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Yatra+One&family=Tiro+Devanagari+Hindi&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     
-    <!-- Firebase App & Services (v9 compat) -->
+    <!-- Firebase Libraries -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
     <style>
-        .font-brand { font-family: 'Yatra One', cursive; }
-        .font-devnagari { font-family: 'Tiro Devanagari Hindi', serif; }
-        .font-signature { font-family: 'Dancing Script', cursive; }
         @media print {
             body * { visibility: hidden; }
-            #digitalCardPrintArea, #digitalCardPrintArea * { visibility: visible; }
-            #digitalCardPrintArea { position: absolute; left: 0; top: 0; margin: auto; }
-            .no-print { display: none !important; }
+            #printableIcard, #printableIcard * { visibility: visible; }
+            #printableIcard {
+                position: fixed;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                box-shadow: none;
+                border: 2px solid #b91c1c;
+            }
         }
     </style>
 </head>
-<body class="bg-gray-100 font-sans min-h-screen flex flex-col text-gray-800">
+<body class="bg-gray-100 font-sans min-h-screen flex flex-col">
 
-    <!-- Top Navigation Header -->
-    <header class="bg-gradient-to-r from-red-800 via-red-700 to-red-800 text-white shadow-lg sticky top-0 z-40 border-b-2 border-yellow-500">
+    <!-- Top Header -->
+    <header class="bg-red-700 text-white shadow-md sticky top-0 z-50">
         <div class="max-w-4xl mx-auto px-4 py-2.5 flex justify-between items-center">
             <div class="flex items-center space-x-2.5">
-                <!-- Portal Logo Icon -->
-                <div class="w-10 h-10 bg-white rounded-lg flex flex-col items-center justify-center p-0.5 shadow border border-yellow-400">
-                    <span class="text-red-700 font-extrabold text-[9px] leading-tight font-brand">आवाज़</span>
-                    <span class="bg-blue-900 text-white text-[7px] font-black px-1 rounded-sm w-full text-center">NEWS</span>
-                </div>
+                <div class="bg-white text-red-700 font-black w-9 h-9 flex items-center justify-center rounded-xl text-xl shadow">आ</div>
                 <div>
-                    <h1 class="text-lg font-black tracking-tight font-brand leading-none">आवाज़ बुंदेलखंड <span class="text-yellow-400">NEWS</span></h1>
-                    <span class="text-[10px] text-red-100 tracking-wider block font-devnagari">डिजिटल मीडिया नेटवर्क | निष्पक्ष पत्रकारिता</span>
+                    <h1 class="text-lg font-black tracking-tight leading-none">आवाज़ बुंदेलखंड न्यूज़</h1>
+                    <span class="text-[10px] text-red-100 font-medium tracking-wide">डिजिटल मीडिया नेटवर्क | निष्पक्ष एवं सटीक</span>
                 </div>
             </div>
             
-            <div id="authHeaderArea" class="flex items-center">
-                <button type="button" id="btnLoginOpen" onclick="openLoginModal()" class="text-xs bg-yellow-400 hover:bg-yellow-300 text-red-950 font-black px-3.5 py-1.5 rounded-full shadow transition flex items-center gap-1.5 cursor-pointer">
-                    <i class="fa-solid fa-id-badge text-sm"></i> <span>स्टाफ़ लॉगिन</span>
+            <div id="authHeaderArea" class="relative z-50">
+                <!-- Guaranteed Direct Click Button -->
+                <button type="button" id="btnLoginOpen" onclick="document.getElementById('authModal').classList.remove('hidden')" class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow hover:bg-gray-100 transition flex items-center gap-1.5 active:scale-95 cursor-pointer">
+                    <i class="fa-solid fa-user-lock"></i> <span>स्टाफ़ लॉगिन</span>
                 </button>
                 <div id="userProfileBadge" class="hidden flex items-center space-x-2">
-                    <span id="userRoleBadge" class="text-[11px] bg-red-950 border border-yellow-500 text-yellow-300 px-3 py-1 rounded-full font-bold"></span>
-                    <button type="button" onclick="logoutDirect()" title="लॉगआउट" class="text-xs bg-black/50 hover:bg-black/75 text-white p-1.5 rounded-full cursor-pointer"><i class="fa-solid fa-power-off"></i></button>
+                    <span id="userRoleBadge" class="text-[11px] bg-red-900 border border-red-400 px-2.5 py-1 rounded-full font-bold"></span>
+                    <button type="button" onclick="logoutDirect()" title="लॉगआउट" class="text-xs bg-black/40 hover:bg-black/60 text-white p-1.5 rounded-full cursor-pointer"><i class="fa-solid fa-power-off"></i></button>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- Navigation Tabs for Logged-in Staff -->
-    <nav id="staffNavigation" class="hidden bg-white border-b border-gray-200 sticky top-[57px] z-30 shadow-sm">
+    <!-- Navigation Bar for Logged-in Staff -->
+    <nav id="staffNavigation" class="hidden bg-white border-b border-gray-200 sticky top-[53px] z-40 shadow-sm">
         <div class="max-w-4xl mx-auto flex justify-around text-xs font-bold overflow-x-auto">
-            <button type="button" onclick="switchTab('feed')" id="tabFeed" class="py-3 px-2 border-b-2 border-red-700 text-red-700 whitespace-nowrap"><i class="fa-solid fa-newspaper mr-1"></i> मुख्य बुलेटिन</button>
-            <button type="button" onclick="switchTab('reporter')" id="tabReporter" class="py-3 px-2 border-b-2 border-transparent text-gray-500 whitespace-nowrap"><i class="fa-solid fa-pen-to-square mr-1"></i> नई ख़बर भेजें</button>
-            <button type="button" onclick="switchTab('myCard')" id="tabMyCard" class="py-3 px-2 border-b-2 border-transparent text-gray-500 whitespace-nowrap"><i class="fa-solid fa-address-card mr-1"></i> मेरा डिजिटल कार्ड</button>
-            <button type="button" onclick="switchTab('wallet')" id="tabWallet" class="py-3 px-2 border-b-2 border-transparent text-gray-500 whitespace-nowrap"><i class="fa-solid fa-wallet mr-1"></i> मानदेय / पर्स</button>
-            <button type="button" onclick="switchTab('admin')" id="tabAdmin" class="hidden py-3 px-2
+            <button type="button" onclick="switchTab('feed')" id="tabFeed" class="py-3 px-2 border-b-2 border-red-700 text-red-700 whitespace-nowrap"><i class="fa-solid fa-newspaper mr-1"></i> मुख्य समाचार</button>
+            <button type="button" onclick="switchTab('reporter')" id="tabReporter" class="py-3 px-2 border-b-2 border-transparent text-gray-500 whitespace-nowrap"><i class="fa-solid fa-pen-to-square mr-1"></i> नई ख़बर पोस्ट</button>
+            <button type="button" onclick="switchTab('wallet')" id="tabWallet" class="py-3 px-2 border-b-2 border-transparent text-gray-500 whitespace-nowrap"><i class="fa-solid fa-wallet mr-1"></i> मेरा पर्स (₹30/ख़बर)</button>
+            <button type="button" onclick="switchTab('admin')" id="tabAdmin" class="hidden py-3 px-2 border-b-2 border-transparent text-gray-500 whitespace-nowrap"><i class="fa-solid fa-shield-halved mr-1"></i> ख़बर समीक्षा</button>
+            <button type="button" onclick="switchTab('manageReporters')" id="tabManageReporters" class="hidden py-3 px-2 border-b-2 border-transparent text-gray-500 whitespace-nowrap"><i class="fa-solid fa-id-card-clip mr-1"></i> रिपोर्टर व आई-कार्ड</button>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="max-w-4xl mx-auto p-4 flex-grow w-full">
+
+        <!-- 1. GENERAL NEWS FEED (Public & All) -->
+        <section id="feedSection" class="space-y-4">
+            <div class="flex items-center justify-between pb-2 border-b border-gray-200">
+                <h3 class="text-sm font-bold text-gray-800 flex items-center">
+                    <span class="w-2.5 h-2.5 bg-red-600 rounded-full animate-ping mr-2"></span> मुख्य बुलेटिन व ताज़ा ख़बरें
+                </h3>
+                <span class="text-[11px] text-gray-500" id="liveTime"></span>
+            </div>
+            <div id="newsFeedList" class="space-y-4">
+                <p class="text-center text-xs text-gray-400 py-8">समाचार लोड हो रहे हैं...</p>
+            </div>
+        </section>
+
+        <!-- 2. REPORTER SUBMIT SECTION -->
+        <section id="reporterSection" class="hidden bg-white p-5 rounded-2xl shadow border border-gray-200 space-y-3">
+            <h3 class="text-sm font-bold text-gray-800 border-b pb-2 flex items-center">
+                <i class="fa-solid fa-pen-nib mr-2 text-red-600"></i> नई ख़बर दर्ज करें
+            </h3>
+            
+            <div>
+                <label class="text-xs font-semibold text-gray-700">समाचार मुख्य शीर्षक (हेडलाइन)</label>
+                <input type="text" id="newsTitle" placeholder="खबर का मुख्य शीर्षक लिखें..." class="w-full mt-1 border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-red-600">
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+                <div>
+                    <label class="text-xs font-semibold text-gray-700">क्षेत्र / तहसील</label>
+                    <input type="text" id="newsLocation" placeholder="सरीला, हमीरपुर" class="w-full mt-1 border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none">
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-gray-700">श्रेणी</label>
+                    <select id="newsCategory" class="w-full mt-1 border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none">
+                        <option>राजनीति</option>
+                        <option>विकास कार्य</option>
+                        <option>स्थानीय समस्या</option>
+                        <option>अपराध / दुर्घटना</option>
+                        <option>कृषि व ग्रामीण</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                <div>
+                    <label class="text-xs font-semibold text-gray-700 block mb-1"><i class="fa-solid fa-camera text-blue-600 mr-1"></i> खबर की फोटो (गैलरी से)</label>
+                    <input type="file" id="newsImageFileInput" accept="image/*" class="w-full text-xs border p-1 rounded-lg">
+                    <div id="imagePreviewContainer" class="hidden mt-2 relative">
+                        <img id="newsPreviewImg" src="" class="h-28 w-full object-cover rounded-lg border">
+                        <button type="button" onclick="removeSelectedImage()" class="absolute top-1 right-1 bg-red-600 text-white rounded-full w-5 h-5 text-[10px]">✕</button>
+                    </div>
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-gray-700 block mb-1"><i class="fa-brands fa-youtube text-red-600 mr-1"></i> यूट्यूब वीडियो लिंक (वैकल्पिक)</label>
+                    <input type="url" id="newsVideoUrl" placeholder="https://youtube.com/watch?v=..." class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs outline-none">
+                </div>
+            </div>
+
+            <div>
+                <label class="text-xs font-semibold text-gray-700">खबर का सम्पूर्ण विवरण</label>
+                <textarea id="newsContent" rows="4" placeholder="पूरी जानकारी विस्तार से लिखें..." class="w-full mt-1 border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-red-600"></textarea>
+            </div>
+
+            <button type="button" id="btnSubmitNews" onclick="submitArticle()" class="w-full bg-red-700 text-white py-2.5 rounded-lg text-sm font-semibold hover:bg-red-800 transition">
+                समीक्षा हेतु भेजें (Send for Approval)
+            </button>
+        </section>
+
+        <!-- 3. WALLET & PAYOUT TRACKING (REPORTER VIEW) -->
+        <section id="walletSection" class="hidden space-y-4">
+            <div class="bg-gradient-to-r from-red-800 to-red-600 text-white p-5 rounded-2xl shadow">
+                <span class="text-xs uppercase text-red-200 font-semibold tracking-wider">स्वीकृत मानदेय शेष (₹30 प्रति स्वीकृत खबर)</span>
+                <div class="text-3xl font-extrabold mt-1">₹<span id="reporterBalance">0</span></div>
+                <p class="text-[11px] text-red-100 mt-1">आपकी कुल स्वीकृत खबरें: <span id="reporterApprovedCount" class="font-bold">0</span></p>
+            </div>
+
+            <div class="bg-white p-4 rounded-xl border border-gray-200 space-y-2">
+                <h4 class="text-xs font-bold text-gray-800 border-b pb-2 flex items-center">
+                    <i class="fa-solid fa-building-columns text-red-600 mr-1.5"></i> पंजीकृत भुगतान खाता विवरण
+                </h4>
+                <div class="text-xs text-gray-700 space-y-1">
+                    <div><strong>खाता / UPI:</strong> <span id="dispReporterPayment">दर्ज नहीं</span></div>
+                    <div><strong>स्थायी पता:</strong> <span id="dispReporterAddress">दर्ज नहीं</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. ADMIN APPROVAL DESK (NEWS) -->
+        <section id="adminSection" class="hidden bg-white p-4 rounded-xl border border-gray-200 space-y-4">
+            <h3 class="text-sm font-bold text-gray-800 border-b pb-2 flex items-center">
+                <i class="fa-solid fa-list-check text-red-600 mr-2"></i> रिपोर्टरों की लंबित ख़बर समीक्षा
+            </h3>
+            <div id="pendingNewsList" class="space-y-3">
+                <p class="text-xs text-gray-400">कोई समीक्षा लंबित नहीं है।</p>
+            </div>
+        </section>
+
+        <!-- 5. MANAGE REPORTERS & GENERATE ICARD (ADMIN ONLY) -->
+        <section id="manageReportersSection" class="hidden bg-white p-5 rounded-2xl border border-gray-200 space-y-5">
+            <h3 class="text-sm font-bold text-gray-800 border-b pb-2 flex items-center">
+                <i class="fa-solid fa-user-plus text-red-600 mr-2"></i> नया रिपोर्टर जोड़ें एवं अधिकृत करें
+            </h3>
+            
+            <div class="space-y-3">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs font-semibold text-gray-700">रिपोर्टर का पूरा नाम</label>
+                        <input type="text" id="repNameInput" placeholder="उदा. मयंक सिंह" class="w-full border p-2 rounded text-xs outline-none">
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold text-gray-700">10-अंकों का मोबाइल नंबर</label>
+                        <input type="tel" id="repPhoneInput" placeholder="8853252811" maxlength="10" class="w-full border p-2 rounded text-xs outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-xs font-semibold text-gray-700">पूरा स्थायी/कार्यक्षेत्र पता</label>
+                    <input type="text" id="repAddressInput" placeholder="ग्राम व पोस्ट- सरीला, हमीरपुर (उ.प्र.)" class="w-full border p-2 rounded text-xs outline-none">
+                </div>
+
+                <div>
+                    <label class="text-xs font-semibold text-gray-700">बैंक खाता संख्या या UPI ID (भुगतान हेतु)</label>
+                    <input type="text" id="repPaymentInput" placeholder="उदा. 123456789012 या name@upi" class="w-full border p-2 rounded text-xs outline-none">
+                </div>
+
+                <div>
+                    <label class="text-xs font-semibold text-gray-700 block mb-1">रिपोर्टर की पासपोर्ट फोटो (गैलरी से)</label>
+                    <input type="file" id="repPhotoFileInput" accept="image/*" class="w-full text-xs border p-1 rounded">
+                    <div id="repPhotoPreviewBox" class="hidden mt-2">
+                        <img id="repPhotoPreview" src="" class="w-16 h-16 rounded-full object-cover border-2 border-red-600">
+                    </div>
+                </div>
+
+                <button type="button" onclick="addNewReporterByAdmin()" class="bg-red-700 text-white px-5 py-2.5 rounded-lg text-xs font-semibold hover:bg-red-800 shadow">
+                    अधिकृत रिपोर्टर सुरक्षित करें
+                </button>
+            </div>
+
+            <div class="pt-4 border-t">
+                <h4 class="text-xs font-bold text-gray-800 mb-2">अधिकृत रिपोर्टर, मानदेय हिसाब (₹30/ख़बर) एवं आई-कार्ड</h4>
+                <div id="approvedReportersList" class="space-y-3 text-xs"></div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- PROFESSIONAL DIGITAL MEDIA CARD (ICARD) MODAL -->
+    <div id="icardModal" class="fixed inset-0 bg-black/80 z-[1000] flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl p-4 max-w-sm w-full space-y-3 shadow-2xl relative">
+            <button onclick="document.getElementById('icardModal').classList.add('hidden')" class="absolute top-2 right-3 text-gray-400 hover:text-black text-xl font-bold">✕</button>
+
+            <!-- Printable Physical Card Box -->
+            <div id="printableIcard" class="w-[310px] mx-auto bg-white rounded-xl overflow-hidden border-2 border-red-700 shadow-lg relative font-sans text-gray-900">
+                <!-- Header -->
+                <div class="bg-red-700 text-white text-center p-3 relative">
+                    <div class="inline-block bg-white text-red-700 font-black px-2 py-0.5 rounded text-sm mb-0.5">आ</div>
+                    <h2 class="text-sm font-black tracking-tight leading-tight uppercase">आवाज़ बुंदेलखंड न्यूज़</h2>
+                    <span class="text-[9px] text-red-100 tracking-wider block font-bold uppercase">डिजिटल मीडिया कार्ड (DIGITAL MEDIA CARD)</span>
+                </div>
+
+                <!-- Body -->
+                <div class="p-3 text-center space-y-2">
+                    <div class="relative inline-block">
+                        <img id="cardPhoto" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="w-20 h-20 rounded-full mx-auto object-cover border-2 border-red-600 shadow">
+                        <span class="absolute bottom-0 right-0 bg-green-600 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full">अधिकृत</span>
+                    </div>
+
+                    <div>
+                        <h3 id="cardName" class="text-sm font-black text-gray-900 leading-tight">मयंक सिंह</h3>
+                        <p class="text-[10px] text-red-700 font-bold uppercase mt-0.5">रिपोर्टर आवाज़ बुंदेलखंड</p>
+                    </div>
+
+                    <div class="text-[10px] text-gray-600 text-left bg-gray-50 p-2 rounded-lg border border-gray-200 space-y-1">
+                        <div><strong>आईडी नंबर:</strong> <span id="cardId">ABN-2026-001</span></div>
+                        <div><strong>मोबाइल:</strong> <span id="cardPhone">+918853252811</span></div>
+                        <div><strong>पता:</strong> <span id="cardAddress">सरीला, हमीरपुर (उ.प्र.)</span></div>
+                        <div><strong>वैधता:</strong> <span>31 दिसम्बर 2027</span></div>
+                    </div>
+
+                    <!-- Seal & Sign Area -->
+                    <div class="flex justify-between items-end pt-2 border-t border-gray-200 text-center">
+                        <!-- Round Official Seal -->
+                        <div class="w-14 h-14 rounded-full border-2 border-red-700 flex flex-col items-center justify-center text-[7px] text-red-700 font-black leading-tight rotate-[-8deg] opacity-90 p-0.5">
+                            <span>★ स्वीकृत ★</span>
+                            <span>आवाज़ बुंदेलखंड</span>
+                            <span>डिजिटल मीडिया</span>
+                        </div>
+
+                        <!-- Editor Signature -->
+                        <div class="text-right">
+                            <div class="font-serif italic text-xs font-black text-blue-900 tracking-wide border-b border-gray-400 pb-0.5">Mayank Singh</div>
+                            <span class="text-[8px] font-bold text-gray-600 block mt-0.5">मयंक सिंह (प्रधान संपादक)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-100 text-[8px] text-gray-500 py-1 text-center border-t">
+                    यह एक अधिकृत डिजिटल मीडिया कार्ड है। किसी भी सहायता हेतु कार्यालय से संपर्क करें।
+                </div>
+            </div>
+
+            <!-- Print Actions -->
+            <div class="flex gap-2 pt-2">
+                <button type="button" onclick="window.print()" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1 shadow">
+                    <i class="fa-solid fa-print"></i> डिजिटल मीडिया कार्ड प्रिंट करें
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AUTH POPUP MODAL (Highest z-index so nothing blocks it) -->
+    <div id="authModal" class="fixed inset-0 bg-black/80 z-[999999] flex items-center justify-center p-4 hidden">
+        <div class="bg-white max-w-sm w-full p-6 rounded-2xl shadow-2xl relative">
+            <button type="button" onclick="document.getElementById('authModal').classList.add('hidden')" class="absolute top-4 right-4 text-gray-500 hover:text-black text-xl font-bold">✕</button>
+
+            <div class="text-center mb-4">
+                <i class="fa-solid fa-shield-halved text-3xl text-red-600 mb-1"></i>
+                <h2 class="text-base font-bold text-gray-900">स्टाफ़ लॉगिन</h2>
+                <p class="text-[11px] text-gray-500">संपादक व अधिकृत रिपोर्टर प्रवेश</p>
+            </div>
+
+            <div id="phoneInputContainer">
+                <label class="block text-xs font-semibold text-gray-700 mb-1">पंजीकृत मोबाइल नंबर</label>
+                <div class="flex items-center border border-gray-300 rounded-lg overflow-hidden mb-3">
+                    <span class="bg-gray-100 text-gray-600 px-3 py-2 text-sm font-semibold border-r">+91</span>
+                    <input type="tel" id="phoneNumber" placeholder="8853252811" maxlength="10" class="w-full px-3 py-2 text-sm outline-none">
+                </div>
+                <div id="recaptcha-container" class="mb-3 flex justify-center"></div>
+                <button type="button" id="btnSendOtp" onclick="sendOTP()" class="w-full bg-red-700 text-white py-2.5 rounded-lg text-sm font-semibold hover:bg-red-800 transition">
+                    OTP प्राप्त करें
+                </button>
+            </div>
+
+            <div id="otpInputContainer" class="hidden">
+                <label class="block text-xs font-semibold text-gray-700 mb-1">6-अंकों का सुरक्षा पिन दर्ज करें</label>
+                <input type="number" id="verificationCode" placeholder="पिन कोड" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-center text-lg tracking-widest font-bold outline-none mb-3">
+                <button type="button" id="btnVerifyOtp" onclick="verifyOTP()" class="w-full bg-green-600 text-white py-2.5 rounded-lg text-sm font-semibold hover:bg-green-700 transition">
+                    लॉगिन सत्यापित करें
+                </button>
+                <button type="button" onclick="resetLoginForm()" class="w-full mt-2 text-xs text-gray-500 hover:underline">नंबर बदलें</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 py-3 text-center text-xs text-gray-500">
+        &copy; 2026 आवाज़ बुंदेलखंड न्यूज़ | निष्पक्ष डिजिटल पत्रकारिता
+    </footer>
+
+    <!-- Firebase Script Logic -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDkTCnl-LkUxYTYBHs_d5o03zphRi8aHBI",
+            authDomain: "awaj-bundelkhand-news.firebaseapp.com",
+            databaseURL: "https://awaj-bundelkhand-news-default-rtdb.firebaseio.com",
+            projectId: "awaj-bundelkhand-news",
+            storageBucket: "awaj-bundelkhand-news.appspot.com",
+            messagingSenderId: "105958974098",
+            appId: "1:105958974098:web:40ac74cdac62368120bc4b"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+
+        const ADMIN_PHONE = "+918853252811";
+        const PAYOUT_PER_NEWS = 30;
+
+        let currentUser = null;
+        let confirmationResult = null;
+        let isAdmin = false;
+        let isReporter = false;
+        let myProfile = { name: "संवाददाता", phone: "", address: "बुंदेलखंड", paymentDetail: "दर्ज नहीं", photo: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png" };
+        let compressedNewsImage = "";
+        let compressedRepPhoto = "";
+
+        setInterval(() => {
+            const el = document.getElementById('liveTime');
+            if (el) el.innerText = new Date().toLocaleTimeString('hi-IN');
+        }, 1000);
+
+        function logoutDirect() { auth.signOut().then(() => location.reload()); }
+
+        function initRecaptcha() {
+            if (!window.recaptchaVerifier) {
+                window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { 'size': 'invisible' });
+            }
+        }
+
+        function sendOTP() {
+            const phone = document.getElementById('phoneNumber').value.trim();
+            if (phone.length !== 10) return alert("कृपया 10 अंकों का मोबाइल नंबर भरें!");
+
+            initRecaptcha();
+            const btn = document.getElementById('btnSendOtp');
+            btn.disabled = true;
+            btn.innerText = "जाँच हो रही है...";
+
+            auth.signInWithPhoneNumber("+91" + phone, window.recaptchaVerifier)
+                .then(res => {
+                    confirmationResult = res;
+                    document.getElementById('phoneInputContainer').classList.add('hidden');
+                    document.getElementById('otpInputContainer').classList.remove('hidden');
+                })
+                .catch(err => {
+                    alert("त्रुटि: " + err.message);
+                    if (window.recaptchaVerifier) window.recaptchaVerifier.render().then(id => grecaptcha.reset(id));
+                    btn.disabled = false;
+                    btn.innerText = "OTP प्राप्त करें";
+                });
+        }
+
+        function verifyOTP() {
+            const code = document.getElementById('verificationCode').value.trim();
+            if (!code) return alert("सुरक्षा कोड भरें!");
+
+            confirmationResult.confirm(code)
+                .then(res => {
+                    document.getElementById('authModal').classList.add('hidden');
+                    currentUser = res.user;
+                    evaluateRoleAndSetupUI(currentUser);
+                })
+                .catch(() => alert("अमान्य सुरक्षा कोड!"));
+        }
+
+        function resetLoginForm() {
+            document.getElementById('phoneInputContainer').classList.remove('hidden');
+            document.getElementById('otpInputContainer').classList.add('hidden');
+            const btn = document.getElementById('btnSendOtp');
+            btn.disabled = false;
+            btn.innerText = "OTP प्राप्त करें";
+        }
+
+        function evaluateRoleAndSetupUI(user) {
+            const phone = user.phoneNumber;
+
+            if (phone === ADMIN_PHONE) {
+                isAdmin = true;
+                isReporter = false;
+                myProfile = { name: "मयंक सिंह", phone: ADMIN_PHONE, address: "सरीला, हमीरपुर (उ.प्र.)", paymentDetail: "Admin Account", photo: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png" };
+                activateDashboard("मुख्य संपादक (Admin)", true);
+            } else {
+                db.ref('authorized_reporters').orderByChild('phone').equalTo(phone).once('value', snap => {
+                    if (snap.exists()) {
+                        const data = Object.values(snap.val())[0];
+                        if (data.status === 'approved') {
+                            isAdmin = false;
+                            isReporter = true;
+                            myProfile = data;
+                            activateDashboard("रिपोर्टर आवाज़ बुंदेलखंड", false);
+                        } else {
+                            alert("आपका खाता अभी समीक्षाधीन है। एडमिन द्वारा स्वीकृति के बाद ही आप समाचार भेज सकेंगे।");
+                            logoutDirect();
+                        }
+                    } else {
+                        alert("यह नंबर आवाज़ बुंदेलखंड में पंजीकृत नहीं है। आप पाठक के रूप में खबर पढ़ सकते हैं।");
+                        logoutDirect();
+                    }
+                });
+            }
+        }
+
+        function activateDashboard(roleTitle, hasAdminRights) {
+            document.getElementById('btnLoginOpen').classList.add('hidden');
+            document.getElementById('userProfileBadge').classList.remove('hidden');
+            document.getElementById('userRoleBadge').innerText = roleTitle;
+            document.getElementById('staffNavigation').classList.remove('hidden');
+
+            if (hasAdminRights) {
+                document.getElementById('tabAdmin').classList.remove('hidden');
+                document.getElementById('tabManageReporters').classList.remove('hidden');
+                loadPendingNews();
+                loadReportersForAdmin();
+            } else {
+                document.getElementById('tabAdmin').classList.add('hidden');
+                document.getElementById('tabManageReporters').classList.add('hidden');
+            }
+
+            switchTab('feed');
+            loadReporterWallet();
+        }
+
+        function compressImage(file, maxWidth, maxHeight, quality, callback) {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function (e) {
+                const img = new Image();
+                img.src = e.target.result;
+                img.onload = function () {
+                    const canvas = document.createElement('canvas');
+                    let w = img.width, h = img.height;
+                    if (w > h) {
+                        if (w > maxWidth) { h = Math.round((h * maxWidth) / w); w = maxWidth; }
+                    } else {
+                        if (h > maxHeight) { w = Math.round((w * maxHeight) / h); h = maxHeight; }
+                    }
+                    canvas.width = w; canvas.height = h;
+                    const ctx = canvas.getContext("2d");
+                    ctx.drawImage(img, 0, 0, w, h);
+                    callback(canvas.toDataURL("image/jpeg", quality));
+                };
+            };
+        }
+
+        document.getElementById('newsImageFileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            compressImage(file, 900, 900, 0.7, b64 => {
+                compressedNewsImage = b64;
+                document.getElementById('newsPreviewImg').src = b64;
+                document.getElementById('imagePreviewContainer').classList.remove('hidden');
+            });
+        });
+
+        function removeSelectedImage() {
+            compressedNewsImage = "";
+            document.getElementById('newsImageFileInput').value = "";
+            document.getElementById('imagePreviewContainer').classList.add('hidden');
+        }
+
+        document.getElementById('repPhotoFileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            compressImage(file, 300, 300, 0.8, b64 => {
+                compressedRepPhoto = b64;
+                document.getElementById('repPhotoPreview').src = b64;
+                document.getElementById('repPhotoPreviewBox').classList.remove('hidden');
+            });
+        });
+
+        function addNewReporterByAdmin() {
+            if (!isAdmin) return;
+            const name = document.getElementById('repNameInput').value.trim();
+            const phoneRaw = document.getElementById('repPhoneInput').value.trim();
+            const address = document.getElementById('repAddressInput').value.trim();
+            const payment = document.getElementById('repPaymentInput').value.trim();
+
+            if (!name || phoneRaw.length !== 10 || !address || !payment) {
+                return alert("कृपया नाम, 10 अंकों का फ़ोन नंबर, पता और बैंक/UPI विवरण भरें!");
+            }
+
+            const phone = "+91" + phoneRaw;
+            const newRepData = {
+                name: name,
+                phone: phone,
+                address: address,
+                paymentDetail: payment,
+                photo: compressedRepPhoto || "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+                status: 'approved',
+                pressId: "ABN-" + Math.floor(1000 + Math.random() * 9000),
+                addedAt: Date.now()
+            };
+
+            db.ref('authorized_reporters').push(newRepData).then(() => {
+                alert("नया रिपोर्टर सफलतापूर्वक अधिकृत कर दिया गया!");
+                document.getElementById('repNameInput').value = '';
+                document.getElementById('repPhoneInput').value = '';
+                document.getElementById('repAddressInput').value = '';
+                document.getElementById('repPaymentInput').value = '';
+                document.getElementById('repPhotoFileInput').value = '';
+                document.getElementById('repPhotoPreviewBox').classList.add('hidden');
+                compressedRepPhoto = "";
+            });
+        }
+
+        function loadReportersForAdmin() {
+            db.ref('authorized_reporters').on('value', snapRep => {
+                const container = document.getElementById('approvedReportersList');
+                container.innerHTML = '';
+                const reps = snapRep.val() || {};
+
+                db.ref('news_articles').on('value', snapNews => {
+                    const news = snapNews.val() || {};
+
+                    Object.keys(reps).forEach(key => {
+                        const rep = reps[key];
+                        let approvedCount = 0;
+
+                        Object.values(news).forEach(item => {
+                            if (item.reporterPhone === rep.phone && item.status === 'approved') {
+                                approvedCount++;
+                            }
+                        });
+
+                        const totalEarning = approvedCount * PAYOUT_PER_NEWS;
+
+                        const card = document.createElement('div');
+                        card.className = "p-3 bg-gray-50 border border-gray-200 rounded-lg flex flex-col md:flex-row md:items-center justify-between gap-2";
+                        card.innerHTML = `
+                            <div class="flex items-center space-x-3">
+                                <img src="${rep.photo}" class="w-11 h-11 rounded-full border border-red-500 object-cover flex-shrink-0">
+                                <div>
+                                    <div class="font-bold text-gray-900">${rep.name} <span class="text-[10px] text-red-600">(${rep.pressId || 'ABN'})</span></div>
+                                    <div class="text-[10px] text-gray-500">${rep.phone} | पता: ${rep.address || 'बुंदेलखंड'}</div>
+                                    <div class="text-[10px] text-blue-700 font-medium">खाता/UPI: ${rep.paymentDetail || 'N/A'}</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 self-end md:self-center">
+                                <span class="text-green-800 font-bold bg-green-100 px-2.5 py-1 rounded text-xs border border-green-300">देय: ₹${totalEarning} (${approvedCount} ख़बरें)</span>
+                                <button type="button" onclick='openIcard(${JSON.stringify(rep)})' class="bg-blue-600 text-white px-3 py-1 rounded text-[11px] font-semibold hover:bg-blue-700 shadow">
+                                    <i class="fa-solid fa-id-card"></i> आई-कार्ड
+                                </button>
+                                <button type="button" onclick="deleteReporter('${key}')" class="text-red-600 font-bold text-xs p-1">हटाएं</button>
+                            </div>
+                        `;
+                        container.appendChild(card);
+                    });
+                });
+            });
+        }
+
+        function deleteReporter(key) {
+            if (isAdmin && confirm("क्या आप इस रिपोर्टर को हटाना चाहते हैं?")) {
+                db.ref('authorized_reporters/' + key).remove();
+            }
+        }
+
+        function openIcard(rep) {
+            document.getElementById('cardName').innerText = rep.name;
+            document.getElementById('cardPhone').innerText = rep.phone;
+            document.getElementById('cardAddress').innerText = rep.address || 'बुंदेलखंड';
+            document.getElementById('cardId').innerText = rep.pressId || 'ABN-2026-001';
+            document.getElementById('cardPhoto').src = rep.photo || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
+            document.getElementById('icardModal').classList.remove('hidden');
+        }
+
+        function submitArticle() {
+            const title = document.getElementById('newsTitle').value.trim();
+            const location = document.getElementById('newsLocation').value.trim();
+            const category = document.getElementById('newsCategory').value;
+            const content = document.getElementById('newsContent').value.trim();
+            const videoUrl = document.getElementById('newsVideoUrl').value.trim();
+
+            if (!title || !location || !content) return alert("कृपया शीर्षक, क्षेत्र और विवरण भरें!");
+
+            const btn = document.getElementById('btnSubmitNews');
+            btn.disabled = true;
+            btn.innerText = "अपलोड हो रहा है...";
+
+            const articleData = {
+                title: title,
+                location: location,
+                category: category,
+                content: content,
+                imageUrl: compressedNewsImage || "",
+                videoUrl: videoUrl || "",
+                reporterPhone: currentUser.phoneNumber,
+                reporterName: myProfile.name || (isAdmin ? "मयंक सिंह" : "विशेष संवाददाता"),
+                reporterRole: isAdmin ? "admin" : "reporter",
+                reporterAddress: myProfile.address || location,
+                reporterPhoto: myProfile.photo || "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+                timestamp: Date.now(),
+                status: isAdmin ? 'approved' : 'pending',
+                payoutAmount: PAYOUT_PER_NEWS
+            };
+
+            db.ref('news_articles').push(articleData).then(() => {
+                btn.disabled = false;
+                btn.innerText = "समीक्षा हेतु भेजें (Send for Approval)";
+                alert(isAdmin ? "ख़बर सीधे लाइव प्रकाशित हो गई!" : "आपकी ख़बर समीक्षा हेतु एडमिन को भेज दी गई है!");
+                document.getElementById('newsTitle').value = '';
+                document.getElementById('newsLocation').value = '';
+                document.getElementById('newsContent').value = '';
+                document.getElementById('newsVideoUrl').value = '';
+                removeSelectedImage();
+                switchTab('feed');
+            });
+        }
+
+        function loadNewsFeed() {
+            db.ref('news_articles').orderByChild('status').equalTo('approved').on('value', snap => {
+                const list = document.getElementById('newsFeedList');
+                list.innerHTML = '';
+                const articles = snap.val();
+
+                if (!articles) {
+                    list.innerHTML = `<p class="text-center text-xs text-gray-400 py-8">फ़िलहाल कोई प्रकाशित समाचार नहीं है।</p>`;
+                    return;
+                }
+
+                Object.keys(articles).reverse().forEach(key => {
+                    const item = articles[key];
+                    const card = document.createElement('div');
+                    card.className = "bg-white p-4 rounded-xl border border-gray-200 shadow-sm space-y-3";
+
+                    let mediaHtml = '';
+                    if (item.videoUrl) {
+                        let reg = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
+                        let m = item.videoUrl.match(reg);
+                        if (m && m[2].length === 11) {
+                            mediaHtml += `<div class="w-full aspect-video rounded-lg overflow-hidden my-2 shadow"><iframe class="w-full h-full" src="https://www.youtube.com/embed/${m[2]}" frameborder="0" allowfullscreen></iframe></div>`;
+                        }
+                    }
+                    if (item.imageUrl) {
+                        mediaHtml += `<div class="w-full rounded-lg overflow-hidden my-2 border"><img src="${item.imageUrl}" class="w-full h-auto max-h-96 object-cover" onerror="this.style.display='none'"></div>`;
+                    }
+
+                    const roleTitle = item.reporterRole === 'admin' ? 'प्रधान संपादक, आवाज़ बुंदेलखंड' : 'रिपोर्टर आवाज़ बुंदेलखंड';
+
+                    card.innerHTML = `
+                        <div class="flex items-center justify-between border-b pb-2 mb-2">
+                            <div class="flex items-center space-x-2.5">
+                                <img src="${item.reporterPhoto || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png'}" alt="Reporter" class="w-9 h-9 rounded-full border border-red-500 object-cover shadow-sm">
+                                <div>
+                                    <div class="text-xs font-bold text-gray-900 leading-tight">
+                                        ${item.reporterName || 'विशेष संवाददाता'} - 
+                                        <span class="text-red-700 font-semibold">${roleTitle}</span>
+                                    </div>
+                                    <div class="text-[10px] text-gray-500 flex items-center gap-1 mt-0.5">
+                                        <i class="fa-solid fa-location-dot text-red-500"></i>
+                                        <span>पता: ${item.reporterAddress || item.location || 'बुंदेलखंड'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="text-[10px] bg-red-50 text-red-700 font-semibold px-2 py-0.5 rounded-full border border-red-100">${item.category}</span>
+                        </div>
+
+                        <h4 class="text-base font-bold text-gray-900 leading-snug">${item.title}</h4>
+                        ${mediaHtml}
+                        <p class="text-xs text-gray-700 leading-relaxed whitespace-pre-line">${item.content}</p>
+
+                        <div class="pt-2 border-t flex justify-between items-center text-[10px] text-gray-400">
+                            <span><i class="fa-regular fa-clock mr-1"></i>${new Date(item.timestamp).toLocaleDateString('hi-IN')}</span>
+                            <span>आवाज़ बुंदेलखंड डिजिटल न्यूज़ नेटवर्क</span>
+                        </div>
+                    `;
+                    list.appendChild(card);
+                });
+            });
+        }
+
+        function loadPendingNews() {
+            db.ref('news_articles').orderByChild('status').equalTo('pending').on('value', snap => {
+                const list = document.getElementById('pendingNewsList');
+                list.innerHTML = '';
+                const articles = snap.val();
+
+                if (!articles) {
+                    list.innerHTML = `<p class="text-xs text-gray-400">कोई नई समीक्षा लंबित नहीं है।</p>`;
+                    return;
+                }
+
+                Object.keys(articles).forEach(key => {
+                    const item = articles[key];
+                    const card = document.createElement('div');
+                    card.className = "p-3 bg-gray-50 border border-gray-200 rounded-lg space-y-2";
+                    card.innerHTML = `
+                        <div class="flex justify-between items-start">
+                            <span class="text-xs font-bold text-red-700">[${item.location}] ${item.title}</span>
+                            <span class="text-[10px] bg-yellow-100 text-yellow-800 px-1.5 py-0.5 rounded font-semibold">समीक्षाधीन (मानदेय: ₹30)</span>
+                        </div>
+                        <p class="text-xs text-gray-600 line-clamp-3">${item.content}</p>
+                        ${item.imageUrl ? `<img src="${item.imageUrl}" class="h-20 w-32 object-cover rounded border">` : ''}
+                        <div class="text-[10px] text-gray-500">संवाददाता: <strong>${item.reporterName}</strong> (${item.reporterPhone}) | पता: ${item.reporterAddress}</div>
+                        <div class="flex space-x-2 pt-1">
+                            <button type="button" onclick="reviewArticle('${key}', 'approved')" class="bg-green-600 text-white px-3 py-1 rounded text-xs font-medium hover:bg-green-700 shadow">स्वीकृत करें (Approve)</button>
+                            <button type="button" onclick="reviewArticle('${key}', 'rejected')" class="bg-red-600 text-white px-3 py-1 rounded text-xs font-medium hover:bg-red-700 shadow">अस्वीकार करें</button>
+                        </div>
+                    `;
+                    list.appendChild(card);
+                });
+            });
+        }
+
+        function reviewArticle(key, status) {
+            db.ref('news_articles/' + key).update({ status: status });
+        }
+
+        function loadReporterWallet() {
+            if (!currentUser) return;
+            document.getElementById('dispReporterAddress').innerText = myProfile.address || 'दर्ज नहीं';
+            document.getElementById('dispReporterPayment').innerText = myProfile.paymentDetail || 'दर्ज नहीं';
+
+            db.ref('news_articles').orderByChild('reporterPhone').equalTo(currentUser.phoneNumber).on('value', snap => {
+                let approvedCount = 0;
+                const articles = snap.val() || {};
+                Object.values(articles).forEach(art => {
+                    if (art.status === 'approved') approvedCount++;
+                });
+
+                document.getElementById('reporterApprovedCount').innerText = approvedCount;
+                document.getElementById('reporterBalance').innerText = approvedCount * PAYOUT_PER_NEWS;
+            });
+        }
+
+        function switchTab(tab) {
+            ['feed', 'reporter', 'wallet', 'admin', 'manageReporters'].forEach(t => {
+                const sec = document.getElementById(t + 'Section');
+                if (sec) sec.classList.add('hidden');
+                const b = document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1));
+                if (b) {
+                    b.classList.remove('border-red-700', 'text-red-700');
+                    b.classList.add('border-transparent', 'text-gray-500');
+                }
+            });
+
+            const activeSec = document.getElementById(tab + 'Section');
+            if (activeSec) activeSec.classList.remove('hidden');
+            const activeBtn = document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1));
+            if (activeBtn) {
+                activeBtn.classList.add('border-red-700', 'text-red-700');
+                activeBtn.classList.remove('border-transparent', 'text-gray-500');
+            }
+        }
+
+        loadNewsFeed();
+
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                currentUser = user;
+                evaluateRoleAndSetupUI(user);
+            }
+        });
+    </script>
+</body>
+</html>
