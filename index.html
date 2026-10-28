@@ -13,11 +13,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-
-    <style>
-        .news-badge { animation: pulse 2s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .6; } }
-    </style>
 </head>
 <body class="bg-gray-100 font-sans min-h-screen flex flex-col">
 
@@ -25,78 +20,45 @@
     <header class="bg-red-700 text-white shadow-md sticky top-0 z-50">
         <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center space-x-2">
-                <div class="bg-white text-red-700 font-bold px-2 py-1 rounded text-lg tracking-wider">आ</div>
+                <div class="bg-white text-red-700 font-black px-2.5 py-1 rounded-lg text-lg tracking-wider shadow">आ</div>
                 <div>
-                    <h1 class="text-xl font-bold tracking-tight leading-none">आवाज़ बुंदेलखंड न्यूज़</h1>
-                    <span class="text-[10px] text-red-100 uppercase tracking-widest block">सत्य, साहस और सटीक निष्पक्षता</span>
+                    <h1 class="text-xl font-black tracking-tight leading-none">आवाज़ बुंदेलखंड न्यूज़</h1>
+                    <span class="text-[10px] text-red-100 tracking-wider block">सत्य, साहस और सटीक निष्पक्षता</span>
                 </div>
             </div>
-            <div id="userProfileBadge" class="hidden flex items-center space-x-2">
-                <span id="userRoleBadge" class="text-xs bg-red-800 border border-red-500 px-2 py-0.5 rounded-full font-medium"></span>
-                <button onclick="logoutUser()" class="text-xs bg-black/30 hover:bg-black/50 text-white px-2 py-1 rounded transition"><i class="fa-solid fa-right-from-bracket"></i></button>
+            
+            <!-- Right Actions: Login Button for Users / Profile for Reporter-Admin -->
+            <div>
+                <button id="btnLoginOpen" onclick="openLoginModal()" class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow hover:bg-gray-100 transition flex items-center gap-1">
+                    <i class="fa-solid fa-user-lock"></i> <span>स्टाफ़ लॉगिन</span>
+                </button>
+                <div id="userProfileBadge" class="hidden flex items-center space-x-2">
+                    <span id="userRoleBadge" class="text-xs bg-red-900 border border-red-500 px-2.5 py-1 rounded-full font-semibold"></span>
+                    <button onclick="logoutUser()" title="लॉगआउट" class="text-xs bg-black/40 hover:bg-black/60 text-white p-1.5 rounded-full transition"><i class="fa-solid fa-power-off"></i></button>
+                </div>
             </div>
         </div>
     </header>
 
-    <!-- Navigation Tabs (Only visible when logged in) -->
-    <nav id="appNavigation" class="hidden bg-white border-b border-gray-200">
-        <div class="max-w-6xl mx-auto flex justify-around text-xs md:text-sm font-semibold">
-            <button onclick="switchTab('feed')" id="tabFeed" class="py-3 px-3 border-b-2 border-red-700 text-red-700 flex items-center"><i class="fa-solid fa-newspaper mr-1"></i> समाचार फ़ीड</button>
-            <button onclick="switchTab('reporter')" id="tabReporter" class="py-3 px-3 border-b-2 border-transparent text-gray-600 flex items-center"><i class="fa-solid fa-pen-to-square mr-1"></i> ख़बर पोस्ट</button>
-            <button onclick="switchTab('wallet')" id="tabWallet" class="py-3 px-3 border-b-2 border-transparent text-gray-600 flex items-center"><i class="fa-solid fa-wallet mr-1"></i> मेरा पर्स</button>
-            <button onclick="switchTab('admin')" id="tabAdmin" class="hidden py-3 px-3 border-b-2 border-transparent text-gray-600 flex items-center"><i class="fa-solid fa-shield-halved mr-1"></i> एडमिन समीक्षा</button>
-            <button onclick="switchTab('manageReporters')" id="tabManageReporters" class="hidden py-3 px-3 border-b-2 border-transparent text-gray-600 flex items-center"><i class="fa-solid fa-users-gear mr-1"></i> रिपोर्टर जोड़ें</button>
+    <!-- Navigation Tabs (Only visible to Logged-in Reporters and Admin) -->
+    <nav id="staffNavigation" class="hidden bg-white border-b border-gray-200 sticky top-[57px] z-40 shadow-sm">
+        <div class="max-w-6xl mx-auto flex justify-around text-xs md:text-sm font-bold">
+            <button onclick="switchTab('feed')" id="tabFeed" class="py-3 px-3 border-b-2 border-red-700 text-red-700 flex items-center"><i class="fa-solid fa-newspaper mr-1.5"></i> समाचार फ़ीड</button>
+            <button onclick="switchTab('reporter')" id="tabReporter" class="py-3 px-3 border-b-2 border-transparent text-gray-500 flex items-center"><i class="fa-solid fa-pen-to-square mr-1.5"></i> ख़बर पोस्ट</button>
+            <button onclick="switchTab('wallet')" id="tabWallet" class="py-3 px-3 border-b-2 border-transparent text-gray-500 flex items-center"><i class="fa-solid fa-wallet mr-1.5"></i> मेरा पर्स</button>
+            <button onclick="switchTab('admin')" id="tabAdmin" class="hidden py-3 px-3 border-b-2 border-transparent text-gray-500 flex items-center"><i class="fa-solid fa-shield-halved mr-1.5"></i> एडमिन समीक्षा</button>
+            <button onclick="switchTab('manageReporters')" id="tabManageReporters" class="hidden py-3 px-3 border-b-2 border-transparent text-gray-500 flex items-center"><i class="fa-solid fa-users-gear mr-1.5"></i> रिपोर्टर जोड़ें</button>
         </div>
     </nav>
 
     <!-- Main Container -->
     <main class="max-w-4xl mx-auto p-4 flex-grow w-full">
 
-        <!-- AUTHENTICATION VIEW -->
-        <section id="authSection" class="max-w-md mx-auto my-8 bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-            <div class="text-center mb-6">
-                <div class="inline-flex p-3 bg-red-50 text-red-600 rounded-full mb-2">
-                    <i class="fa-solid fa-shield-cat text-2xl"></i>
-                </div>
-                <h2 class="text-lg font-bold text-gray-900">सुरक्षित OTP लॉगिन</h2>
-                <p class="text-xs text-gray-500 mt-1">अपने मोबाइल नंबर पर OTP प्राप्त करके पोर्टल खोलें</p>
-            </div>
-
-            <!-- Phone Input Form -->
-            <div id="phoneInputContainer">
-                <label class="block text-xs font-semibold text-gray-700 mb-1">मोबाइल नंबर (10 अंक)</label>
-                <div class="flex items-center border border-gray-300 rounded-lg overflow-hidden mb-4 focus-within:ring-2 focus-within:ring-red-600">
-                    <span class="bg-gray-100 text-gray-600 px-3 py-2 text-sm font-semibold border-r">+91</span>
-                    <input type="tel" id="phoneNumber" placeholder="8853252811" maxlength="10" class="w-full px-3 py-2 text-sm outline-none">
-                </div>
-                
-                <div id="recaptcha-container" class="mb-4 flex justify-center"></div>
-
-                <button onclick="sendOTP()" id="btnSendOtp" class="w-full bg-red-700 text-white py-2.5 rounded-lg font-medium hover:bg-red-800 transition flex items-center justify-center space-x-2">
-                    <span>OTP प्राप्त करें</span>
-                    <i class="fa-solid fa-paper-plane text-xs"></i>
-                </button>
-            </div>
-
-            <!-- OTP Verification Form -->
-            <div id="otpInputContainer" class="hidden">
-                <div class="text-xs text-green-700 bg-green-50 p-2.5 rounded-lg mb-3">
-                    <i class="fa-solid fa-check-circle mr-1"></i> SMS द्वारा 6-अंकों का OTP भेजा गया है।
-                </div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">OTP कोड दर्ज करें</label>
-                <input type="number" id="verificationCode" placeholder="123456" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-center text-lg tracking-widest font-bold outline-none mb-4 focus:ring-2 focus:ring-red-600">
-                <button onclick="verifyOTP()" id="btnVerifyOtp" class="w-full bg-green-600 text-white py-2.5 rounded-lg font-medium hover:bg-green-700 transition">
-                    सत्यापित करें और ऐप खोलें
-                </button>
-                <button onclick="resetLoginForm()" class="w-full mt-2 text-xs text-gray-500 hover:underline">दूसरा नंबर डालें</button>
-            </div>
-        </section>
-
-        <!-- SECTION: NEWS FEED -->
-        <section id="feedSection" class="hidden space-y-4">
-            <div class="flex items-center justify-between pb-2 border-b">
+        <!-- 1. GENERAL NEWS FEED (Always Accessible to General Public) -->
+        <section id="feedSection" class="space-y-4">
+            <div class="flex items-center justify-between pb-2 border-b border-gray-200">
                 <h3 class="text-sm font-bold text-gray-800 flex items-center">
-                    <span class="w-2.5 h-2.5 bg-green-500 rounded-full animate-ping mr-2"></span> ताज़ा समाचार बुलेटिन
+                    <span class="w-2.5 h-2.5 bg-red-600 rounded-full animate-ping mr-2"></span> मुख्य बुलेटिन व ताज़ा ख़बरें
                 </h3>
                 <span class="text-[11px] text-gray-500" id="liveTime"></span>
             </div>
@@ -105,18 +67,20 @@
             </div>
         </section>
 
-        <!-- SECTION: REPORTER ARTICLE SUBMIT -->
-        <section id="reporterSection" class="hidden bg-white p-5 rounded-xl border border-gray-200">
-            <h3 class="text-base font-bold text-gray-800 mb-3 border-b pb-2"><i class="fa-solid fa-pen-nib mr-1 text-red-600"></i> नई ख़बर दर्ज करें</h3>
+        <!-- 2. REPORTER SUBMIT SECTION -->
+        <section id="reporterSection" class="hidden bg-white p-5 rounded-2xl shadow-sm border border-gray-200">
+            <h3 class="text-base font-bold text-gray-800 mb-3 border-b pb-2 flex items-center">
+                <i class="fa-solid fa-pen-nib mr-2 text-red-600"></i> नई ख़बर दर्ज करें
+            </h3>
             <div class="space-y-3">
                 <div>
                     <label class="text-xs font-semibold text-gray-700">समाचार शीर्षक (हेडलाइन)</label>
-                    <input type="text" id="newsTitle" placeholder="आकर्षक शीर्षक लिखें..." class="w-full mt-1 border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-red-600">
+                    <input type="text" id="newsTitle" placeholder="खबर का मुख्य शीर्षक लिखें..." class="w-full mt-1 border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-red-600">
                 </div>
                 <div class="grid grid-cols-2 gap-2">
                     <div>
-                        <label class="text-xs font-semibold text-gray-700">ज़िला / क्षेत्र</label>
-                        <input type="text" id="newsLocation" placeholder="जैसे: हमीरपुर / सरीला" class="w-full mt-1 border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-red-600">
+                        <label class="text-xs font-semibold text-gray-700">क्षेत्र / तहसील</label>
+                        <input type="text" id="newsLocation" placeholder="उदा. सरीला, हमीरपुर" class="w-full mt-1 border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-red-600">
                     </div>
                     <div>
                         <label class="text-xs font-semibold text-gray-700">श्रेणी</label>
@@ -130,25 +94,25 @@
                     </div>
                 </div>
                 <div>
-                    <label class="text-xs font-semibold text-gray-700">खबर का पूरा विवरण</label>
-                    <textarea id="newsContent" rows="4" placeholder="खबर का सम्पूर्ण विवरण यहाँ दर्ज करें..." class="w-full mt-1 border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-red-600"></textarea>
+                    <label class="text-xs font-semibold text-gray-700">खबर का सम्पूर्ण विवरण</label>
+                    <textarea id="newsContent" rows="4" placeholder="पूरी जानकारी विस्तार से लिखें..." class="w-full mt-1 border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-red-600"></textarea>
                 </div>
-                <button onclick="submitArticle()" class="w-full bg-red-700 text-white py-2.5 rounded-lg text-sm font-semibold hover:bg-red-800 transition">
+                <button onclick="submitArticle()" class="w-full bg-red-700 text-white py-2.5 rounded-lg text-sm font-semibold hover:bg-red-800 transition shadow">
                     समीक्षा हेतु भेजें (Send for Approval)
                 </button>
             </div>
         </section>
 
-        <!-- SECTION: REPORTER WALLET & PAYOUTS -->
+        <!-- 3. REPORTER WALLET -->
         <section id="walletSection" class="hidden space-y-4">
-            <div class="bg-gradient-to-r from-red-800 to-red-600 text-white p-5 rounded-2xl shadow-md">
-                <span class="text-xs uppercase text-red-200 font-semibold tracking-wider">कुल स्वीकृत मानदेय शेष</span>
+            <div class="bg-gradient-to-r from-red-800 to-red-600 text-white p-5 rounded-2xl shadow">
+                <span class="text-xs uppercase text-red-200 font-semibold tracking-wider">स्वीकृत मानदेय शेष</span>
                 <div class="text-3xl font-extrabold mt-1">₹<span id="reporterBalance">0</span></div>
-                <p class="text-[11px] text-red-100 mt-2">प्रशासन द्वारा स्वीकृत प्रत्येक स्वीकृत ख़बर पर निर्धारित मानदेय सीधे आपके खाते में भेजा जाता है।</p>
+                <p class="text-[11px] text-red-100 mt-2">प्रशासन द्वारा स्वीकृत प्रत्येक खबर पर निर्धारित मानदेय सीधे आपके बैंक खाते में भेजा जाता है।</p>
             </div>
 
             <div class="bg-white p-4 rounded-xl border border-gray-200">
-                <h4 class="text-xs font-bold text-gray-800 mb-2">बैंक विवरण (भुगतान प्राप्ति हेतु)</h4>
+                <h4 class="text-xs font-bold text-gray-800 mb-2">बैंक खाता विवरण (भुगतान प्राप्ति हेतु)</h4>
                 <div class="space-y-2 text-xs">
                     <input type="text" id="bankName" placeholder="बैंक का नाम" class="w-full border p-2 rounded">
                     <input type="text" id="bankAccount" placeholder="खाता संख्या (A/C No)" class="w-full border p-2 rounded">
@@ -159,37 +123,78 @@
             </div>
         </section>
 
-        <!-- SECTION: ADMIN APPROVAL PANEL -->
-        <section id="adminSection" class="hidden bg-white p-5 rounded-xl border border-gray-200 space-y-4">
-            <h3 class="text-sm font-bold text-gray-800 border-b pb-2"><i class="fa-solid fa-list-check mr-1 text-red-600"></i> लंबित समाचार समीक्षा (Admin Approval Desk)</h3>
+        <!-- 4. ADMIN APPROVAL DESK -->
+        <section id="adminSection" class="hidden bg-white p-5 rounded-2xl border border-gray-200 space-y-4">
+            <h3 class="text-sm font-bold text-gray-800 border-b pb-2 flex items-center">
+                <i class="fa-solid fa-list-check mr-2 text-red-600"></i> लंबित समाचार समीक्षा (Admin Approval Desk)
+            </h3>
             <div id="pendingNewsList" class="space-y-3">
                 <p class="text-xs text-gray-400">कोई समीक्षा लंबित नहीं है।</p>
             </div>
         </section>
 
-        <!-- SECTION: MANAGE REPORTERS (ADMIN ONLY) -->
-        <section id="manageReportersSection" class="hidden bg-white p-5 rounded-xl border border-gray-200 space-y-4">
-            <h3 class="text-sm font-bold text-gray-800 border-b pb-2"><i class="fa-solid fa-user-plus mr-1 text-red-600"></i> नए रिपोर्टर जोड़ें</h3>
+        <!-- 5. MANAGE REPORTERS (ADMIN ONLY) -->
+        <section id="manageReportersSection" class="hidden bg-white p-5 rounded-2xl border border-gray-200 space-y-4">
+            <h3 class="text-sm font-bold text-gray-800 border-b pb-2 flex items-center">
+                <i class="fa-solid fa-user-plus mr-2 text-red-600"></i> नए रिपोर्टर जोड़ें
+            </h3>
             <div class="flex gap-2">
-                <input type="text" id="newReporterName" placeholder="रिपोर्टर का नाम" class="w-1/2 border p-2 rounded text-xs">
-                <input type="tel" id="newReporterPhone" placeholder="10 अंक मोबाइल नंबर" maxlength="10" class="w-1/2 border p-2 rounded text-xs">
+                <input type="text" id="newReporterName" placeholder="रिपोर्टर का नाम" class="w-1/2 border p-2 rounded text-xs outline-none">
+                <input type="tel" id="newReporterPhone" placeholder="10 अंक मोबाइल नंबर" maxlength="10" class="w-1/2 border p-2 rounded text-xs outline-none">
             </div>
             <button onclick="addReporter()" class="bg-red-700 text-white px-4 py-2 rounded text-xs font-semibold hover:bg-red-800">अधिकृत रिपोर्टर बनाएं</button>
 
-            <h4 class="text-xs font-bold text-gray-800 pt-3 border-t">वर्तमान अधिकृत रिपोर्टर व भुगतान सूची</h4>
+            <h4 class="text-xs font-bold text-gray-800 pt-3 border-t">वर्तमान अधिकृत रिपोर्टर व मानदेय सूची</h4>
             <div id="adminReportersList" class="space-y-2 text-xs"></div>
         </section>
 
     </main>
+
+    <!-- AUTHENTICATION POPUP MODAL -->
+    <div id="authModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white max-w-sm w-full p-6 rounded-2xl shadow-2xl relative">
+            <button onclick="closeLoginModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700"><i class="fa-solid fa-xmark text-lg"></i></button>
+
+            <div class="text-center mb-5">
+                <div class="inline-flex p-3 bg-red-50 text-red-600 rounded-full mb-2">
+                    <i class="fa-solid fa-shield-cat text-2xl"></i>
+                </div>
+                <h2 class="text-base font-bold text-gray-900">रिपोर्टर / एडमिन लॉगिन</h2>
+                <p class="text-[11px] text-gray-500 mt-0.5">केवल अधिकृत कर्मियों के लिए</p>
+            </div>
+
+            <!-- Phone Form -->
+            <div id="phoneInputContainer">
+                <label class="block text-xs font-semibold text-gray-700 mb-1">पंजीकृत मोबाइल नंबर</label>
+                <div class="flex items-center border border-gray-300 rounded-lg overflow-hidden mb-4 focus-within:ring-2 focus-within:ring-red-600">
+                    <span class="bg-gray-100 text-gray-600 px-3 py-2 text-sm font-semibold border-r">+91</span>
+                    <input type="tel" id="phoneNumber" placeholder="8853252811" maxlength="10" class="w-full px-3 py-2 text-sm outline-none">
+                </div>
+                <div id="recaptcha-container" class="mb-4 flex justify-center"></div>
+                <button onclick="sendOTP()" id="btnSendOtp" class="w-full bg-red-700 text-white py-2.5 rounded-lg text-sm font-semibold hover:bg-red-800 transition">
+                    OTP प्राप्त करें
+                </button>
+            </div>
+
+            <!-- OTP Form -->
+            <div id="otpInputContainer" class="hidden">
+                <label class="block text-xs font-semibold text-gray-700 mb-1">6-अंकों का OTP कोड</label>
+                <input type="number" id="verificationCode" placeholder="123456" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-center text-lg tracking-widest font-bold outline-none mb-4 focus:ring-2 focus:ring-red-600">
+                <button onclick="verifyOTP()" id="btnVerifyOtp" class="w-full bg-green-600 text-white py-2.5 rounded-lg text-sm font-semibold hover:bg-green-700 transition">
+                    सत्यापित करें
+                </button>
+                <button onclick="resetLoginForm()" class="w-full mt-2 text-xs text-gray-500 hover:underline">नंबर बदलें</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer class="bg-white border-t border-gray-200 py-3 text-center text-xs text-gray-500">
         &copy; 2026 आवाज़ बुंदेलखंड न्यूज़ नेटवर्क | निष्पक्ष पत्रकारिता
     </footer>
 
-    <!-- Firebase Logic -->
+    <!-- Script Logic -->
     <script>
-        // 1. Firebase Configuration (With updated API Key)
         const firebaseConfig = {
             apiKey: "AIzaSyDkTCnl-LkUxYTYBHs_d5o03zphRi8aHBI",
             authDomain: "awaj-bundelkhand-news.firebaseapp.com",
@@ -200,7 +205,6 @@
             appId: "1:105958974098:web:40ac74cdac62368120bc4b"
         };
 
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.database();
@@ -209,14 +213,16 @@
         let currentUser = null;
         let confirmationResult = null;
         let isAdmin = false;
+        let isReporter = false;
 
-        // Clock display
         setInterval(() => {
             const timeEl = document.getElementById('liveTime');
             if (timeEl) timeEl.innerText = new Date().toLocaleTimeString('hi-IN');
         }, 1000);
 
-        // Recaptcha Init
+        function openLoginModal() { document.getElementById('authModal').classList.remove('hidden'); }
+        function closeLoginModal() { document.getElementById('authModal').classList.add('hidden'); }
+
         function initRecaptcha() {
             if (!window.recaptchaVerifier) {
                 window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
@@ -226,7 +232,6 @@
             }
         }
 
-        // Send OTP
         function sendOTP() {
             const phone = document.getElementById('phoneNumber').value.trim();
             if (phone.length !== 10) {
@@ -236,42 +241,38 @@
 
             initRecaptcha();
             const fullPhone = "+91" + phone;
-            const appVerifier = window.recaptchaVerifier;
 
             document.getElementById('btnSendOtp').disabled = true;
-            document.getElementById('btnSendOtp').innerText = "OTP भेजा जा रहा है...";
+            document.getElementById('btnSendOtp').innerText = "जाँच हो रही है...";
 
-            auth.signInWithPhoneNumber(fullPhone, appVerifier)
+            auth.signInWithPhoneNumber(fullPhone, window.recaptchaVerifier)
                 .then((result) => {
                     confirmationResult = result;
                     document.getElementById('phoneInputContainer').classList.add('hidden');
                     document.getElementById('otpInputContainer').classList.remove('hidden');
                 })
                 .catch((error) => {
-                    console.error(error);
-                    alert("OTP त्रुटि: " + error.message);
-                    if (window.recaptchaVerifier) window.recaptchaVerifier.render().then(widgetId => grecaptcha.reset(widgetId));
+                    alert("त्रुटि: " + error.message);
+                    if (window.recaptchaVerifier) window.recaptchaVerifier.render().then(id => grecaptcha.reset(id));
                     document.getElementById('btnSendOtp').disabled = false;
                     document.getElementById('btnSendOtp').innerText = "OTP प्राप्त करें";
                 });
         }
 
-        // Verify OTP
         function verifyOTP() {
             const code = document.getElementById('verificationCode').value.trim();
             if (code.length !== 6) {
-                alert("कृपया 6-अंकों का OTP कोड डालें!");
+                alert("6-अंकों का OTP दर्ज करें!");
                 return;
             }
 
             confirmationResult.confirm(code)
                 .then((result) => {
+                    closeLoginModal();
                     currentUser = result.user;
-                    checkUserRolesAndInit(currentUser);
+                    evaluateRoleAndSetupUI(currentUser);
                 })
-                .catch((error) => {
-                    alert("अमान्य OTP कोड! कृपया दोबारा जांचें।");
-                });
+                .catch(() => alert("अमान्य OTP कोड!"));
         }
 
         function resetLoginForm() {
@@ -281,38 +282,53 @@
             document.getElementById('btnSendOtp').innerText = "OTP प्राप्त करें";
         }
 
-        // Role & Routing Logic
-        function checkUserRolesAndInit(user) {
-            const userPhone = user.phoneNumber;
-            isAdmin = (userPhone === ADMIN_PHONE);
+        // Role Evaluation
+        function evaluateRoleAndSetupUI(user) {
+            const phone = user.phoneNumber;
 
-            document.getElementById('authSection').classList.add('hidden');
-            document.getElementById('appNavigation').classList.remove('hidden');
+            if (phone === ADMIN_PHONE) {
+                isAdmin = true;
+                isReporter = false;
+                activateDashboard("मुख्य प्रशासक (Admin)", true);
+            } else {
+                // Check if registered as reporter in database
+                db.ref('authorized_reporters').orderByChild('phone').equalTo(phone).once('value', (snap) => {
+                    if (snap.exists()) {
+                        isAdmin = false;
+                        isReporter = true;
+                        activateDashboard("संवाददाता (Reporter)", false);
+                    } else {
+                        alert("यह नंबर आवाज़ बुंदेलखंड न्यूज़ में अधिकृत नहीं है। आप केवल पाठक के रूप में पढ़ सकते हैं।");
+                        logoutUser();
+                    }
+                });
+            }
+        }
+
+        function activateDashboard(roleTitle, hasAdminRights) {
+            document.getElementById('btnLoginOpen').classList.add('hidden');
             document.getElementById('userProfileBadge').classList.remove('hidden');
+            document.getElementById('userRoleBadge').innerText = roleTitle;
+            document.getElementById('staffNavigation').classList.remove('hidden');
 
-            const roleBadge = document.getElementById('userRoleBadge');
-            if (isAdmin) {
-                roleBadge.innerText = "मुख्य प्रशासक (Admin)";
+            if (hasAdminRights) {
                 document.getElementById('tabAdmin').classList.remove('hidden');
                 document.getElementById('tabManageReporters').classList.remove('hidden');
                 loadPendingNews();
                 loadReportersAndPayoutList();
             } else {
-                roleBadge.innerText = "संवाददाता (Reporter)";
+                document.getElementById('tabAdmin').classList.add('hidden');
+                document.getElementById('tabManageReporters').classList.add('hidden');
             }
 
             switchTab('feed');
-            loadNewsFeed();
             loadWalletData();
         }
 
         function logoutUser() {
-            auth.signOut().then(() => {
-                location.reload();
-            });
+            auth.signOut().then(() => location.reload());
         }
 
-        // Submit News
         function submitArticle() {
             const title = document.getElementById('newsTitle').value.trim();
             const location = document.getElementById('newsLocation').value.trim();
@@ -332,7 +348,7 @@
                 reporterPhone: currentUser.phoneNumber,
                 timestamp: Date.now(),
                 status: isAdmin ? 'approved' : 'pending',
-                payoutAmount: 50 // मानदेय राशि
+                payoutAmount: 50
             };
 
             db.ref('news_articles').push(articleData).then(() => {
@@ -344,7 +360,6 @@
             });
         }
 
-        // Feed loader
         function loadNewsFeed() {
             db.ref('news_articles').orderByChild('status').equalTo('approved').on('value', (snap) => {
                 const list = document.getElementById('newsFeedList');
@@ -378,7 +393,6 @@
             });
         }
 
-        // Admin: Review Pending
         function loadPendingNews() {
             db.ref('news_articles').orderByChild('status').equalTo('pending').on('value', (snap) => {
                 const list = document.getElementById('pendingNewsList');
@@ -415,7 +429,6 @@
             db.ref('news_articles/' + key).update({ status: status });
         }
 
-        // Wallet Logic
         function loadWalletData() {
             if (!currentUser) return;
             const safePhone = currentUser.phoneNumber.replace('+', '');
@@ -449,12 +462,9 @@
                 ifsc: document.getElementById('bankIfsc').value.trim(),
                 upi: document.getElementById('bankUpi').value.trim()
             };
-            db.ref('reporter_bank_accounts/' + safePhone).set(data).then(() => {
-                alert("बैंक विवरण सफलतापूर्वक सुरक्षित कर दिए गए!");
-            });
+            db.ref('reporter_bank_accounts/' + safePhone).set(data).then(() => alert("बैंक विवरण सुरक्षित!"));
         }
 
-        // Manage Reporters (Admin)
         function addReporter() {
             if (!isAdmin) return;
             const name = document.getElementById('newReporterName').value.trim();
@@ -466,15 +476,11 @@
             }
 
             const phone = "+91" + phoneInput;
-            db.ref('authorized_reporters').push({
-                name: name,
-                phone: phone,
-                addedAt: Date.now()
-            });
+            db.ref('authorized_reporters').push({ name: name, phone: phone, addedAt: Date.now() });
 
             document.getElementById('newReporterName').value = '';
             document.getElementById('newReporterPhone').value = '';
-            alert("रिपोर्टर को सफलतापूर्वक जोड़ दिया गया!");
+            alert("रिपोर्टर को अधिकृत कर दिया गया!");
         }
 
         function loadReportersAndPayoutList() {
@@ -483,58 +489,48 @@
                 db.ref('reporter_bank_accounts').on('value', (snapBank) => {
                     const banks = snapBank.val() || {};
                     db.ref('news_articles').on('value', (snapNews) => {
-                        renderAdminPayoutTable(reporters, banks, snapNews.val() || {});
+                        const container = document.getElementById('adminReportersList');
+                        container.innerHTML = '';
+                        const news = snapNews.val() || {};
+
+                        Object.keys(reporters).forEach(key => {
+                            const rep = reporters[key];
+                            const safePhone = rep.phone.replace('+', '');
+                            const bank = banks[safePhone] || {};
+
+                            let totalDue = 0;
+                            Object.keys(news).forEach(nKey => {
+                                const item = news[nKey];
+                                if (item.reporterPhone === rep.phone && item.status === 'approved') {
+                                    totalDue += Number(item.payoutAmount || 50);
+                                }
+                            });
+
+                            const card = document.createElement('div');
+                            card.className = "p-3 text-xs border-b border-gray-200 flex justify-between items-center";
+                            card.innerHTML = `
+                                <div>
+                                    <span class="font-bold text-gray-900">${rep.name}</span> (${rep.phone})
+                                    <div class="text-[10px] text-gray-400">A/C: ${bank.accountNumber || 'दर्ज नहीं'} | IFSC: ${bank.ifsc || 'N/A'}</div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-green-700 font-bold bg-green-50 px-2 py-0.5 rounded">देय: ₹${totalDue}</span>
+                                    <button onclick="removeReporter('${key}')" class="text-red-500 font-bold">हटाएं</button>
+                                </div>
+                            `;
+                            container.appendChild(card);
+                        });
                     });
                 });
             });
         }
 
-        function renderAdminPayoutTable(reporters, banks, news) {
-            const container = document.getElementById('adminReportersList');
-            container.innerHTML = '';
-
-            Object.keys(reporters).forEach(key => {
-                const rep = reporters[key];
-                const safePhone = rep.phone.replace('+', '');
-                const bank = banks[safePhone] || {};
-
-                let totalDue = 0;
-                Object.keys(news).forEach(nKey => {
-                    const item = news[nKey];
-                    if (item.reporterPhone === rep.phone && item.status === 'approved') {
-                        totalDue += Number(item.payoutAmount || 50);
-                    }
-                });
-
-                const card = document.createElement('div');
-                card.className = "p-3 text-xs border-b border-gray-200 flex flex-col md:flex-row justify-between md:items-center gap-2";
-                card.innerHTML = `
-                    <div>
-                        <div class="flex items-center space-x-2">
-                            <span class="font-bold text-gray-900 text-sm">${rep.name}</span>
-                            <span class="text-gray-500 font-mono">${rep.phone}</span>
-                        </div>
-                        <p class="text-gray-400 mt-1">
-                            A/C: ${bank.accountNumber || 'दर्ज नहीं'} | IFSC: ${bank.ifsc || 'N/A'} | UPI: ${bank.upi || 'N/A'}
-                        </p>
-                    </div>
-                    <div class="flex items-center justify-between md:justify-end space-x-3">
-                        <span class="text-xs bg-green-50 text-green-700 font-bold px-2.5 py-1 rounded">कुल देय: ₹${totalDue}</span>
-                        <button onclick="removeReporter('${key}')" class="text-red-500 hover:text-red-700 font-semibold">हटाएं</button>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
-
         function removeReporter(key) {
-            if (!isAdmin) return;
-            if (confirm("क्या आप वाकई इस रिपोर्टर को हटाना चाहते हैं?")) {
+            if (isAdmin && confirm("रिपोर्टर को हटाना चाहते हैं?")) {
                 db.ref('authorized_reporters/' + key).remove();
             }
         }
 
-        // Navigation
         function switchTab(tab) {
             ['feed', 'reporter', 'wallet', 'admin', 'manageReporters'].forEach(t => {
                 const sec = document.getElementById(t + 'Section');
@@ -542,7 +538,7 @@
                 const b = document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1));
                 if (b) {
                     b.classList.remove('border-red-700', 'text-red-700');
-                    b.classList.add('border-transparent', 'text-gray-600');
+                    b.classList.add('border-transparent', 'text-gray-500');
                 }
             });
 
@@ -551,15 +547,17 @@
             const activeBtn = document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1));
             if (activeBtn) {
                 activeBtn.classList.add('border-red-700', 'text-red-700');
-                activeBtn.classList.remove('border-transparent', 'text-gray-600');
+                activeBtn.classList.remove('border-transparent', 'text-gray-500');
             }
         }
 
-        // Auto Login State
+        // Initialize: Load Feed for Everyone
+        loadNewsFeed();
+
         auth.onAuthStateChanged((user) => {
             if (user) {
                 currentUser = user;
-                checkUserRolesAndInit(user);
+                evaluateRoleAndSetupUI(user);
             }
         });
     </script>
