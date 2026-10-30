@@ -24,7 +24,6 @@ box-shadow:none;
 }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .ticker-wrap { overflow: hidden; white-space: nowrap; }
-/* टिकर की स्पीड को धीमा (65s) किया गया है */
 .ticker-move { display: inline-block; animation: ticker 65s linear infinite; }
 @keyframes ticker { 0% { transform: translate3d(100%, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
 </style>
@@ -197,7 +196,7 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 
 </section>
 
-<!-- ================= SHORT VIDEO (50s REELS) POST SECTION ================= -->
+<!-- ================= SHORT VIDEO (50s REELS) POST SECTION WITH GALLERY UPLOAD ================= -->
 <section id="shortsPostSection" class="hidden bg-white p-5 rounded-2xl shadow border space-y-3">
 <div class="border-b pb-2 flex justify-between items-center">
 <h3 class="text-sm font-bold text-gray-900 flex items-center gap-1.5">
@@ -216,8 +215,23 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 <input id="shortLocation" class="w-full mt-1 border rounded-lg px-3 py-2 text-sm" placeholder="हमीरपुर, सरीला">
 </div>
 
+<!-- Option 1: File from gallery -->
+<div class="p-3 bg-red-50 border border-red-200 rounded-xl space-y-2">
+<label class="text-xs font-bold text-red-900 flex items-center gap-1.5">
+<i class="fa-solid fa-photo-film text-red-600"></i> गैलरी से शॉर्ट वीडियो अपलोड करें (MP4/WebM)
+</label>
+<input type="file" id="shortVideoFileInput" accept="video/*" class="w-full text-xs border p-1 rounded bg-white">
+<div id="shortVideoPreviewContainer" class="hidden mt-2">
+<video id="shortVideoLocalPreview" controls class="w-full max-h-48 rounded-lg border bg-black"></video>
+<button type="button" onclick="removeShortVideoFile()" class="text-[10px] text-red-600 font-bold hover:underline mt-1 block">गैलरी वीडियो हटाएं</button>
+</div>
+</div>
+
+<div class="text-center text-xs font-bold text-gray-400">-- अथवा --</div>
+
+<!-- Option 2: Link -->
 <div>
-<label class="text-xs font-semibold block mb-1">शॉर्ट वीडियो लिंक (YouTube Shorts, FB Video, या डायरेक्ट MP4 लिंक) *</label>
+<label class="text-xs font-semibold block mb-1">शॉर्ट वीडियो लिंक (YouTube Shorts, FB Video, या डायरेक्ट MP4 लिंक)</label>
 <input type="url" id="shortVideoUrl" placeholder="https://youtube.com/shorts/... या MP4 लिंक" class="w-full border rounded-lg px-3 py-2 text-xs">
 <p class="text-[10px] text-gray-500 mt-1">नोट: यह वीडियो स्वतः 50 सेकंड पर सीमित और लूप में चलेगा।</p>
 </div>
@@ -258,7 +272,7 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 
 </section>
 
-<!-- ================= MANAGE ADS (ADMIN ONLY) ================= -->
+<!-- ================= MANAGE ADS (ADMIN ONLY) WITH VIDEO GALLERY UPLOAD ================= -->
 <section id="manageAdsSection" class="hidden bg-white p-5 rounded-2xl border space-y-4">
 <h3 class="text-sm font-bold border-b pb-2 flex items-center gap-1.5 text-blue-900">
 <i class="fa-solid fa-rectangle-ad text-blue-600"></i>
@@ -277,21 +291,34 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 <label class="text-[11px] font-bold text-gray-700">विज्ञापन का प्रकार *</label>
 <select id="adTypeSelect" onchange="toggleAdTypeInputs()" class="w-full mt-1 border rounded-lg px-3 py-1.5 text-xs bg-white font-bold">
 <option value="banner">बैनर फोटो विज्ञापन</option>
-<option value="video">वीडियो विज्ञापन (YouTube/MP4)</option>
+<option value="video">वीडियो विज्ञापन</option>
 </select>
 </div>
 
+<!-- Banner Input -->
 <div id="adPhotoInputDiv">
-<label class="text-[11px] font-bold text-gray-700 block mb-0.5">विज्ञापन बैनर फोटो</label>
+<label class="text-[11px] font-bold text-gray-700 block mb-0.5">गैलरी से विज्ञापन बैनर फोटो चुनें</label>
 <input type="file" id="adPhotoFileInput" accept="image/*" class="w-full text-xs border p-1 rounded bg-white">
 <div id="adPhotoPreviewDiv" class="hidden mt-2">
 <img id="adPhotoPreview" class="h-24 w-full object-cover rounded-lg border">
 </div>
 </div>
 
-<div id="adVideoInputDiv" class="hidden">
-<label class="text-[11px] font-bold text-gray-700 block mb-0.5">विज्ञापन वीडियो लिंक (YouTube या MP4)</label>
-<input type="url" id="adVideoUrlInput" placeholder="https://youtube.com/watch?v=..." class="w-full border rounded-lg px-3 py-1.5 text-xs bg-white">
+<!-- Video Inputs (Gallery or URL) -->
+<div id="adVideoInputDiv" class="hidden space-y-2">
+<div class="p-2.5 bg-white border rounded-lg space-y-1">
+<label class="text-[11px] font-bold text-gray-700 block">1. गैलरी से विज्ञापन वीडियो अपलोड करें</label>
+<input type="file" id="adVideoFileInput" accept="video/*" class="w-full text-xs border p-1 rounded">
+<div id="adVideoPreviewDiv" class="hidden mt-2">
+<video id="adVideoLocalPreview" controls class="w-full max-h-40 rounded-lg border bg-black"></video>
+<button type="button" onclick="removeAdVideoFile()" class="text-[10px] text-red-600 font-bold hover:underline mt-1 block">गैलरी वीडियो हटाएं</button>
+</div>
+</div>
+
+<div class="p-2.5 bg-white border rounded-lg space-y-1">
+<label class="text-[11px] font-bold text-gray-700 block">2. अथवा विज्ञापन वीडियो लिंक पेस्ट करें (YouTube / MP4)</label>
+<input type="url" id="adVideoUrlInput" placeholder="https://youtube.com/watch?v=..." class="w-full border rounded-lg px-3 py-1.5 text-xs">
+</div>
 </div>
 
 <div>
@@ -609,8 +636,14 @@ class="w-full text-xs text-gray-500 mt-2">
 </div>
 </div>
 
-<footer class="bg-white border-t py-3 text-center text-xs text-gray-500">
-© 2026 आवाज़ बुंदेलखंड न्यूज़ | निष्पक्ष डिजिटल पत्रकारिता
+<!-- ================= FOOTER WITH MAYANK YADUVANSHI MAMNA CREDIT ================= -->
+<footer class="bg-white border-t py-4 text-center space-y-1">
+  <div class="text-xs font-bold text-slate-800">
+    © 2026 आवाज़ बुंदेलखंड न्यूज़ | निष्पक्ष डिजिटल पत्रकारिता
+  </div>
+  <div class="text-[11px] font-black text-red-700 tracking-wide uppercase">
+    This app created by Mayank Yaduvanshi Mamna
+  </div>
 </footer>
 
 <!-- ================= FIREBASE & APP SCRIPT ================= -->
@@ -642,6 +675,8 @@ let adminPhoto = "";
 let compressedNewsImage = "";
 let compressedRepPhoto = "";
 let compressedAdPhoto = "";
+let galleryShortVideoBase64 = "";
+let galleryAdVideoBase64 = "";
 
 let myProfile = {
 name:"संवाददाता",
@@ -692,7 +727,7 @@ return `<div class="aspect-video rounded-xl overflow-hidden my-2 shadow bg-black
 </div>`;
 }
 
-// 3. Direct Video (MP4 / HLS / WebM)
+// 3. Direct Video (MP4 / WebM / Base64 Data Stream)
 return `<div class="aspect-video rounded-xl overflow-hidden my-2 bg-black shadow">
 <video class="w-full h-full object-cover" controls playsinline>
 <source src="${url}">
@@ -757,6 +792,56 @@ img.src=e.target.result;
 };
 reader.onerror=()=>alert("फोटो पढ़ने में समस्या हुई।");
 reader.readAsDataURL(file);
+}
+
+/* VIDEO FILE READER HELPER FOR GALLERY */
+function readVideoFileAsBase64(file, callback) {
+if(!file || !file.type.startsWith("video/")) {
+alert("कृपया सही वीडियो फ़ाइल चुनें।");
+return;
+}
+const reader = new FileReader();
+reader.onload = e => callback(e.target.result);
+reader.onerror = () => alert("वीडियो फ़ाइल लोड करने में समस्या हुई।");
+reader.readAsDataURL(file);
+}
+
+/* GALLERY VIDEO SELECTION FOR SHORTS */
+document.getElementById("shortVideoFileInput").addEventListener("change", function(e) {
+const file = e.target.files[0];
+if (!file) return;
+readVideoFileAsBase64(file, b64 => {
+galleryShortVideoBase64 = b64;
+const prev = document.getElementById("shortVideoLocalPreview");
+prev.src = b64;
+document.getElementById("shortVideoPreviewContainer").classList.remove("hidden");
+});
+});
+
+function removeShortVideoFile() {
+galleryShortVideoBase64 = "";
+document.getElementById("shortVideoFileInput").value = "";
+document.getElementById("shortVideoLocalPreview").src = "";
+document.getElementById("shortVideoPreviewContainer").classList.add("hidden");
+}
+
+/* GALLERY VIDEO SELECTION FOR ADS */
+document.getElementById("adVideoFileInput").addEventListener("change", function(e) {
+const file = e.target.files[0];
+if (!file) return;
+readVideoFileAsBase64(file, b64 => {
+galleryAdVideoBase64 = b64;
+const prev = document.getElementById("adVideoLocalPreview");
+prev.src = b64;
+document.getElementById("adVideoPreviewDiv").classList.remove("hidden");
+});
+});
+
+function removeAdVideoFile() {
+galleryAdVideoBase64 = "";
+document.getElementById("adVideoFileInput").value = "";
+document.getElementById("adVideoLocalPreview").src = "";
+document.getElementById("adVideoPreviewDiv").classList.add("hidden");
 }
 
 /* NEWS IMAGE SELECTION */
@@ -1097,7 +1182,7 @@ btn.innerText="समीक्षा हेतु भेजें";
 });
 }
 
-/* SUBMIT DEDICATED 50s SHORT VIDEO */
+/* SUBMIT DEDICATED 50s SHORT VIDEO (GALLERY OR URL) */
 function submitShortsArticle() {
 if(!currentUser || (!isAdmin && !isReporter)){
 return alert("पहले लॉगिन करें।");
@@ -1106,9 +1191,10 @@ return alert("पहले लॉगिन करें।");
 const title = document.getElementById("shortTitle").value.trim();
 const location = document.getElementById("shortLocation").value.trim();
 const videoUrl = document.getElementById("shortVideoUrl").value.trim();
+const finalVideo = galleryShortVideoBase64 || videoUrl;
 
-if(!title || !location || !videoUrl){
-return alert("कृपया शॉर्ट्स का शीर्षक, स्थान और वीडियो लिंक भरें।");
+if(!title || !location || !finalVideo){
+return alert("कृपया शॉर्ट्स का शीर्षक, स्थान और गैलरी से वीडियो या वीडियो लिंक भरें।");
 }
 
 const btn = document.getElementById("btnSubmitShorts");
@@ -1121,7 +1207,7 @@ location: location,
 category: "शॉर्ट्स रील्स",
 content: "आवाज़ बुंदेलखंड न्यूज़ 50-सेकेंड स्पेशल ग्राउंड रील।",
 imageUrl: "",
-videoUrl: videoUrl,
+videoUrl: finalVideo,
 isShorts: true,
 reporterPhone: currentUser.phoneNumber,
 reporterName: myProfile.name,
@@ -1138,6 +1224,7 @@ alert(isAdmin ? "शॉर्ट वीडियो प्रकाशित ह
 document.getElementById("shortTitle").value = "";
 document.getElementById("shortLocation").value = "";
 document.getElementById("shortVideoUrl").value = "";
+removeShortVideoFile();
 switchTab("feed");
 }).catch(err => alert("त्रुटि: " + err.message))
 .finally(()=>{
@@ -1196,12 +1283,13 @@ db.ref("news_articles/" + key).remove()
 }
 }
 
-/* ================= AD MANAGEMENT FUNCTIONS ================= */
+/* ================= AD MANAGEMENT FUNCTIONS (WITH GALLERY VIDEO SUPPORT) ================= */
 function saveNewAdvertisement() {
 if (!isAdmin) return;
 const client = document.getElementById("adClientName").value.trim();
 const type = document.getElementById("adTypeSelect").value;
 const videoUrl = document.getElementById("adVideoUrlInput").value.trim();
+const finalAdVideo = galleryAdVideoBase64 || videoUrl;
 const actionLink = document.getElementById("adActionLink").value.trim();
 
 if (!client) {
@@ -1212,15 +1300,15 @@ if (type === "banner" && !compressedAdPhoto) {
 return alert("कृपया विज्ञापन बैनर फोटो चुनें।");
 }
 
-if (type === "video" && !videoUrl) {
-return alert("कृपया विज्ञापन वीडियो लिंक भरें।");
+if (type === "video" && !finalAdVideo) {
+return alert("कृपया गैलरी से विज्ञापन वीडियो चुनें या वीडियो लिंक भरें।");
 }
 
 const adData = {
 client: client,
 type: type,
 photo: compressedAdPhoto || "",
-videoUrl: videoUrl,
+videoUrl: finalAdVideo || "",
 actionLink: actionLink || "",
 active: true,
 timestamp: Date.now()
@@ -1234,6 +1322,7 @@ document.getElementById("adActionLink").value = "";
 document.getElementById("adPhotoFileInput").value = "";
 document.getElementById("adPhotoPreviewDiv").classList.add("hidden");
 compressedAdPhoto = "";
+removeAdVideoFile();
 loadAdsForAdmin();
 }).catch(err => alert("त्रुटि: " + err.message));
 }
@@ -1255,7 +1344,7 @@ item.className = "p-2.5 bg-gray-50 border rounded-lg flex items-center justify-b
 item.innerHTML = `
 <div>
 <strong class="text-blue-900">${escapeHTML(ad.client)}</strong>
-<span class="text-[10px] text-gray-500 block">प्रकार: ${ad.type === 'video' ? 'वीडियो' : 'बैनर'}</span>
+<span class="text-[10px] text-gray-500 block">प्रकार: ${ad.type === 'video' ? 'वीडियो विज्ञापन' : 'बैनर विज्ञापन'}</span>
 </div>
 <button class="bg-red-600 text-white px-2.5 py-1 rounded text-xs font-bold" onclick="deleteAdvertisement('${key}')">हटाएं</button>
 `;
@@ -1292,7 +1381,7 @@ adHtml = `
 <div class="bg-white p-2.5 rounded-2xl border shadow-sm space-y-1.5">
 <div class="flex justify-between items-center text-[9px] text-gray-400 font-bold uppercase">
 <span>प्रायोजित विज्ञापन (Sponsored)</span>
-<span class="text-blue-600">${escapeHTML(ad.client)}</span>
+<span class="text-blue-600 font-black">${escapeHTML(ad.client)}</span>
 </div>
 <a href="${ad.actionLink || '#'}" target="_blank" class="block overflow-hidden rounded-xl">
 <img src="${ad.photo}" class="w-full h-32 sm:h-44 object-cover rounded-xl">
@@ -1304,7 +1393,7 @@ adHtml = `
 <div class="bg-white p-2.5 rounded-2xl border shadow-sm space-y-1.5">
 <div class="flex justify-between items-center text-[9px] text-gray-400 font-bold uppercase">
 <span>प्रायोजित वीडियो विज्ञापन</span>
-<span class="text-blue-600">${escapeHTML(ad.client)}</span>
+<span class="text-blue-600 font-black">${escapeHTML(ad.client)}</span>
 </div>
 ${renderUniversalMediaEmbed(ad.videoUrl)}
 </div>
