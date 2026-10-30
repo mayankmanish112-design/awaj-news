@@ -136,7 +136,7 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 
 </section>
 
-<!-- ================= REPORTER NEWS POST SECTION ================= -->
+<!-- ================= REPORTER NEWS POST SECTION (WITH GALLERY VIDEO UPLOAD) ================= -->
 <section id="reporterSection" class="hidden bg-white p-5 rounded-2xl shadow border space-y-3">
 
 <h3 class="text-sm font-bold border-b pb-2">नई ख़बर दर्ज करें</h3>
@@ -166,8 +166,7 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 </div>
 </div>
 
-<div class="grid md:grid-cols-2 gap-2">
-
+<!-- PHOTO ATTACHMENT -->
 <div>
 <label class="text-xs font-semibold block mb-1">खबर की फोटो</label>
 <input type="file" id="newsImageFileInput" accept="image/*" class="w-full text-xs border p-1 rounded">
@@ -178,11 +177,29 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 </div>
 </div>
 
+<!-- VIDEO ATTACHMENT (GALLERY OR URL LINK) -->
+<div class="p-3 bg-red-50/70 border border-red-200 rounded-xl space-y-2">
+<label class="text-xs font-bold text-red-900 flex items-center gap-1.5">
+<i class="fa-solid fa-video text-red-600"></i> खबर का वीडियो अटैच करें (गैलरी से या लिंक द्वारा)
+</label>
+
+<!-- Gallery File Input -->
 <div>
-<label class="text-xs font-semibold block mb-1">वीडियो या लाइव लिंक (YouTube, FB Live, MP4)</label>
-<input type="url" id="newsVideoUrl" placeholder="YouTube, Facebook Live, या वीडियो लिंक डालें" class="w-full border rounded-lg px-3 py-2 text-xs">
+<label class="text-[11px] font-semibold text-gray-700 block mb-0.5">1. मोबाइल गैलरी से वीडियो चुनें (MP4/WebM):</label>
+<input type="file" id="newsVideoFileInput" accept="video/*" class="w-full text-xs border p-1 rounded bg-white">
+<div id="newsVideoPreviewContainer" class="hidden mt-2">
+<video id="newsVideoLocalPreview" controls class="w-full max-h-48 rounded-lg border bg-black"></video>
+<button type="button" onclick="removeNewsVideoFile()" class="text-[10px] text-red-600 font-bold hover:underline mt-1 block">गैलरी वीडियो हटाएं</button>
+</div>
 </div>
 
+<div class="text-center text-[10px] font-bold text-gray-400">-- अथवा लिंक डालें --</div>
+
+<!-- URL Link Input -->
+<div>
+<label class="text-[11px] font-semibold text-gray-700 block mb-0.5">2. यूट्यूब / फेसबुक लाइव या वेब वीडियो का लिंक:</label>
+<input type="url" id="newsVideoUrl" placeholder="https://youtube.com/watch?v=... या FB Live लिंक" class="w-full border rounded-lg px-3 py-1.5 text-xs bg-white">
+</div>
 </div>
 
 <div>
@@ -196,7 +213,7 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 
 </section>
 
-<!-- ================= SHORT VIDEO (50s REELS) POST SECTION WITH GALLERY UPLOAD ================= -->
+<!-- ================= SHORT VIDEO (50s REELS) POST SECTION ================= -->
 <section id="shortsPostSection" class="hidden bg-white p-5 rounded-2xl shadow border space-y-3">
 <div class="border-b pb-2 flex justify-between items-center">
 <h3 class="text-sm font-bold text-gray-900 flex items-center gap-1.5">
@@ -272,7 +289,7 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 
 </section>
 
-<!-- ================= MANAGE ADS (ADMIN ONLY) WITH VIDEO GALLERY UPLOAD ================= -->
+<!-- ================= MANAGE ADS (ADMIN ONLY) ================= -->
 <section id="manageAdsSection" class="hidden bg-white p-5 rounded-2xl border space-y-4">
 <h3 class="text-sm font-bold border-b pb-2 flex items-center gap-1.5 text-blue-900">
 <i class="fa-solid fa-rectangle-ad text-blue-600"></i>
@@ -636,7 +653,7 @@ class="w-full text-xs text-gray-500 mt-2">
 </div>
 </div>
 
-<!-- ================= FOOTER WITH MAYANK YADUVANSHI MAMNA CREDIT ================= -->
+<!-- ================= FOOTER ================= -->
 <footer class="bg-white border-t py-4 text-center space-y-1">
   <div class="text-xs font-bold text-slate-800">
     © 2026 आवाज़ बुंदेलखंड न्यूज़ | निष्पक्ष डिजिटल पत्रकारिता
@@ -675,6 +692,7 @@ let adminPhoto = "";
 let compressedNewsImage = "";
 let compressedRepPhoto = "";
 let compressedAdPhoto = "";
+let galleryNewsVideoBase64 = "";
 let galleryShortVideoBase64 = "";
 let galleryAdVideoBase64 = "";
 
@@ -804,6 +822,25 @@ const reader = new FileReader();
 reader.onload = e => callback(e.target.result);
 reader.onerror = () => alert("वीडियो फ़ाइल लोड करने में समस्या हुई।");
 reader.readAsDataURL(file);
+}
+
+/* GALLERY VIDEO SELECTION FOR NEWS ARTICLE */
+document.getElementById("newsVideoFileInput").addEventListener("change", function(e) {
+const file = e.target.files[0];
+if (!file) return;
+readVideoFileAsBase64(file, b64 => {
+galleryNewsVideoBase64 = b64;
+const prev = document.getElementById("newsVideoLocalPreview");
+prev.src = b64;
+document.getElementById("newsVideoPreviewContainer").classList.remove("hidden");
+});
+});
+
+function removeNewsVideoFile() {
+galleryNewsVideoBase64 = "";
+document.getElementById("newsVideoFileInput").value = "";
+document.getElementById("newsVideoLocalPreview").src = "";
+document.getElementById("newsVideoPreviewContainer").classList.add("hidden");
 }
 
 /* GALLERY VIDEO SELECTION FOR SHORTS */
@@ -1132,7 +1169,7 @@ document.getElementById("cardPhoto").src=rep.photo || DEFAULT_PHOTO;
 document.getElementById("icardModal").classList.remove("hidden");
 }
 
-/* SUBMIT STANDARD NEWS ARTICLE */
+/* SUBMIT STANDARD NEWS ARTICLE (WITH GALLERY VIDEO OR URL SUPPORT) */
 function submitArticle(){
 if(!currentUser || (!isAdmin && !isReporter)){
 return alert("पहले लॉगिन करें।");
@@ -1143,6 +1180,7 @@ const location=document.getElementById("newsLocation").value.trim();
 const category=document.getElementById("newsCategory").value;
 const content=document.getElementById("newsContent").value.trim();
 const videoUrl=document.getElementById("newsVideoUrl").value.trim();
+const finalVideo = galleryNewsVideoBase64 || videoUrl;
 
 if(!title || !location || !content){
 return alert("शीर्षक, क्षेत्र और खबर का विवरण भरें।");
@@ -1158,7 +1196,7 @@ location:location,
 category:category,
 content:content,
 imageUrl:compressedNewsImage || "",
-videoUrl:videoUrl,
+videoUrl:finalVideo,
 isShorts:false,
 reporterPhone:currentUser.phoneNumber,
 reporterName:myProfile.name,
@@ -1174,6 +1212,7 @@ db.ref("news_articles").push(data).then(()=>{
 alert(isAdmin?"खबर प्रकाशित हो गई!":"खबर समीक्षा के लिए भेज दी गई!");
 ["newsTitle","newsLocation","newsContent","newsVideoUrl"].forEach(id=>document.getElementById(id).value="");
 removeSelectedImage();
+removeNewsVideoFile();
 switchTab("feed");
 }).catch(err=>alert("खबर अपलोड नहीं हुई: "+err.message))
 .finally(()=>{
