@@ -24,7 +24,8 @@ box-shadow:none;
 }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .ticker-wrap { overflow: hidden; white-space: nowrap; }
-.ticker-move { display: inline-block; animation: ticker 25s linear infinite; }
+/* टिकर की स्पीड को धीमा (65s) किया गया है */
+.ticker-move { display: inline-block; animation: ticker 65s linear infinite; }
 @keyframes ticker { 0% { transform: translate3d(100%, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
 </style>
 </head>
@@ -36,8 +37,14 @@ box-shadow:none;
 <div class="max-w-4xl mx-auto px-4 py-2 flex justify-between items-center">
 
 <div class="flex items-center gap-2.5">
-<!-- Aapka Original Logo -->
-<img src="1000101830.png" alt="आवाज बुंदेलखंड NEWS" class="w-10 h-10 object-contain rounded-lg shadow-sm border border-amber-400 bg-white p-0.5">
+<!-- आवाज बुंदेलखंड न्यूज़ 3D Logo Badge -->
+<div class="w-11 h-11 rounded-xl shadow-md border-2 border-amber-400 overflow-hidden bg-gradient-to-b from-[#8B0000] via-[#A00000] to-[#002D62] flex flex-col items-center justify-between p-0.5 shrink-0">
+  <span class="text-[9px] font-black text-white leading-none tracking-tighter drop-shadow mt-0.5">आवाज</span>
+  <span class="text-[8px] font-black text-white leading-none tracking-tighter drop-shadow">बुंदेलखंड</span>
+  <div class="w-full bg-[#002244] text-center rounded-[3px] py-0.5 border-t border-amber-400/60">
+    <span class="text-[10px] font-black text-white tracking-widest leading-none">NEWS</span>
+  </div>
+</div>
 
 <div>
 <h1 class="text-base sm:text-lg font-black leading-none tracking-wide">आवाज़ बुंदेलखंड न्यूज़</h1>
@@ -61,7 +68,7 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 </div>
 </div>
 
-<!-- REAL-TIME SCROLLING TICKER -->
+<!-- REAL-TIME SLOW SCROLLING TICKER -->
 <div class="bg-[#001428] text-white text-xs flex items-center border-t border-red-800">
 <span class="bg-[#C8102E] text-amber-300 px-2.5 py-1 font-black text-[10px] uppercase shrink-0 tracking-wider">
 <i class="fa-solid fa-bolt animate-pulse"></i> ब्रेकिंग
@@ -81,9 +88,13 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 
 <button onclick="switchTab('reporter')" id="tabReporter" class="navtab py-3 px-2 border-b-2 border-transparent text-gray-500 whitespace-nowrap">नई ख़बर पोस्ट</button>
 
+<button onclick="switchTab('shortsPost')" id="tabShortsPost" class="navtab py-3 px-2 border-b-2 border-transparent text-gray-500 whitespace-nowrap"><i class="fa-solid fa-bolt text-amber-500"></i> शॉर्ट वीडियो पोस्ट</button>
+
 <button onclick="switchTab('wallet')" id="tabWallet" class="navtab py-3 px-2 border-b-2 border-transparent text-gray-500 whitespace-nowrap">मेरा पर्स (₹30/ख़बर)</button>
 
 <button onclick="switchTab('admin')" id="tabAdmin" class="navtab hidden py-3 px-2 border-b-2 border-transparent text-gray-500 whitespace-nowrap">ख़बर समीक्षा</button>
+
+<button onclick="switchTab('manageAds')" id="tabManageAds" class="navtab hidden py-3 px-2 border-b-2 border-transparent text-gray-500 whitespace-nowrap"><i class="fa-solid fa-rectangle-ad text-blue-600"></i> विज्ञापन प्रबंधन</button>
 
 <button onclick="switchTab('manageReporters')" id="tabManageReporters" class="navtab hidden py-3 px-2 border-b-2 border-transparent text-gray-500 whitespace-nowrap">रिपोर्टर व आई-कार्ड</button>
 
@@ -109,6 +120,9 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 </div>
 </div>
 
+<!-- LIVE SPONSORED AD BANNER (TOP) -->
+<div id="topAdBannerContainer" class="hidden"></div>
+
 <div class="flex items-center justify-between pb-2 border-b">
 <h3 class="text-sm font-bold text-gray-800 flex items-center gap-2">
 <span class="inline-block w-2.5 h-2.5 bg-red-600 rounded-full animate-ping"></span>
@@ -123,7 +137,7 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 
 </section>
 
-<!-- ================= REPORTER POST SECTION ================= -->
+<!-- ================= REPORTER NEWS POST SECTION ================= -->
 <section id="reporterSection" class="hidden bg-white p-5 rounded-2xl shadow border space-y-3">
 
 <h3 class="text-sm font-bold border-b pb-2">नई ख़बर दर्ज करें</h3>
@@ -168,10 +182,6 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 <div>
 <label class="text-xs font-semibold block mb-1">वीडियो या लाइव लिंक (YouTube, FB Live, MP4)</label>
 <input type="url" id="newsVideoUrl" placeholder="YouTube, Facebook Live, या वीडियो लिंक डालें" class="w-full border rounded-lg px-3 py-2 text-xs">
-<div class="mt-1 flex items-center gap-1.5">
-<input type="checkbox" id="isShortsCheck" class="rounded">
-<label for="isShortsCheck" class="text-[11px] text-gray-700 font-bold">यह 50-सेकेंड का शॉर्ट वीडियो (Reel) है</label>
-</div>
 </div>
 
 </div>
@@ -185,6 +195,36 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 समीक्षा हेतु भेजें
 </button>
 
+</section>
+
+<!-- ================= SHORT VIDEO (50s REELS) POST SECTION ================= -->
+<section id="shortsPostSection" class="hidden bg-white p-5 rounded-2xl shadow border space-y-3">
+<div class="border-b pb-2 flex justify-between items-center">
+<h3 class="text-sm font-bold text-gray-900 flex items-center gap-1.5">
+<i class="fa-solid fa-bolt text-amber-500"></i> नया शॉर्ट वीडियो (50s रील) दर्ज करें
+</h3>
+<span class="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold">अधिकतम 50 सेकंड</span>
+</div>
+
+<div>
+<label class="text-xs font-semibold">शॉर्ट्स का शीर्षक (Headline) *</label>
+<input id="shortTitle" class="w-full mt-1 border rounded-lg px-3 py-2 text-sm" placeholder="उदा. सरीला: सड़क निर्माण कार्य का लाइव दृश्य">
+</div>
+
+<div>
+<label class="text-xs font-semibold">क्षेत्र / स्थान *</label>
+<input id="shortLocation" class="w-full mt-1 border rounded-lg px-3 py-2 text-sm" placeholder="हमीरपुर, सरीला">
+</div>
+
+<div>
+<label class="text-xs font-semibold block mb-1">शॉर्ट वीडियो लिंक (YouTube Shorts, FB Video, या डायरेक्ट MP4 लिंक) *</label>
+<input type="url" id="shortVideoUrl" placeholder="https://youtube.com/shorts/... या MP4 लिंक" class="w-full border rounded-lg px-3 py-2 text-xs">
+<p class="text-[10px] text-gray-500 mt-1">नोट: यह वीडियो स्वतः 50 सेकंड पर सीमित और लूप में चलेगा।</p>
+</div>
+
+<button id="btnSubmitShorts" onclick="submitShortsArticle()" class="w-full bg-gradient-to-r from-red-700 to-amber-600 hover:from-red-800 hover:to-amber-700 text-white py-2.5 rounded-lg text-sm font-bold shadow transition">
+शॉर्ट वीडियो प्रकाशित हेतु भेजें
+</button>
 </section>
 
 <!-- ================= REPORTER WALLET ================= -->
@@ -216,6 +256,61 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 कोई खबर लंबित नहीं है।
 </div>
 
+</section>
+
+<!-- ================= MANAGE ADS (ADMIN ONLY) ================= -->
+<section id="manageAdsSection" class="hidden bg-white p-5 rounded-2xl border space-y-4">
+<h3 class="text-sm font-bold border-b pb-2 flex items-center gap-1.5 text-blue-900">
+<i class="fa-solid fa-rectangle-ad text-blue-600"></i>
+विज्ञापन प्रबंधन (फोटो व वीडियो विज्ञापन)
+</h3>
+
+<div class="bg-blue-50 border border-blue-200 rounded-xl p-4 space-y-3">
+<h4 class="text-xs font-bold text-blue-900">नया विज्ञापन जोड़ें (लोकल स्पॉन्सरशिप)</h4>
+
+<div>
+<label class="text-[11px] font-bold text-gray-700">विज्ञापनदाता / संस्थान का नाम *</label>
+<input id="adClientName" class="w-full mt-1 border rounded-lg px-3 py-1.5 text-xs bg-white" placeholder="उदा. गुप्ता ज्वैलर्स, राठ">
+</div>
+
+<div>
+<label class="text-[11px] font-bold text-gray-700">विज्ञापन का प्रकार *</label>
+<select id="adTypeSelect" onchange="toggleAdTypeInputs()" class="w-full mt-1 border rounded-lg px-3 py-1.5 text-xs bg-white font-bold">
+<option value="banner">बैनर फोटो विज्ञापन</option>
+<option value="video">वीडियो विज्ञापन (YouTube/MP4)</option>
+</select>
+</div>
+
+<div id="adPhotoInputDiv">
+<label class="text-[11px] font-bold text-gray-700 block mb-0.5">विज्ञापन बैनर फोटो</label>
+<input type="file" id="adPhotoFileInput" accept="image/*" class="w-full text-xs border p-1 rounded bg-white">
+<div id="adPhotoPreviewDiv" class="hidden mt-2">
+<img id="adPhotoPreview" class="h-24 w-full object-cover rounded-lg border">
+</div>
+</div>
+
+<div id="adVideoInputDiv" class="hidden">
+<label class="text-[11px] font-bold text-gray-700 block mb-0.5">विज्ञापन वीडियो लिंक (YouTube या MP4)</label>
+<input type="url" id="adVideoUrlInput" placeholder="https://youtube.com/watch?v=..." class="w-full border rounded-lg px-3 py-1.5 text-xs bg-white">
+</div>
+
+<div>
+<label class="text-[11px] font-bold text-gray-700">कॉल / संपर्क नंबर या वेबसाइट लिंक (वैकल्पिक)</label>
+<input id="adActionLink" class="w-full mt-1 border rounded-lg px-3 py-1.5 text-xs bg-white" placeholder="उदा. tel:9876543210 या वेबसाइट URL">
+</div>
+
+<button type="button" onclick="saveNewAdvertisement()" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-2 rounded-lg text-xs shadow transition">
++ विज्ञापन लाइव पब्लिश करें
+</button>
+</div>
+
+<!-- Active Ads List -->
+<div class="pt-2">
+<h4 class="text-xs font-bold text-gray-800 mb-2">वर्तमान सक्रिय विज्ञापन</h4>
+<div id="activeAdsListContainer" class="space-y-2">
+<p class="text-xs text-gray-400">कोई विज्ञापन सक्रिय नहीं है।</p>
+</div>
+</div>
 </section>
 
 <!-- ================= MANAGE REPORTERS ================= -->
@@ -393,8 +488,12 @@ class="w-[310px] mx-auto bg-white rounded-xl overflow-hidden border-2 border-red
 
 <div class="bg-red-700 text-white text-center p-3">
 
-<!-- Card Logo -->
-<img src="1000101830.png" class="w-9 h-9 object-contain mx-auto mb-1 bg-white p-0.5 rounded shadow">
+<!-- Card Logo Badge -->
+<div class="w-10 h-10 rounded-lg mx-auto mb-1 border border-amber-400 overflow-hidden bg-gradient-to-b from-[#8B0000] to-[#002D62] flex flex-col items-center justify-between p-0.5">
+  <span class="text-[8px] font-black text-white leading-none">आवाज</span>
+  <span class="text-[7px] font-black text-white leading-none">बुंदेलखंड</span>
+  <div class="w-full bg-[#002244] text-[8px] font-black text-white py-0.5">NEWS</div>
+</div>
 
 <h2 class="text-sm font-black">आवाज़ बुंदेलखंड न्यूज़</h2>
 
@@ -542,6 +641,7 @@ let isReporter = false;
 let adminPhoto = "";
 let compressedNewsImage = "";
 let compressedRepPhoto = "";
+let compressedAdPhoto = "";
 
 let myProfile = {
 name:"संवाददाता",
@@ -706,6 +806,23 @@ document.getElementById("repPhotoPreviewBox").classList.remove("hidden");
 });
 });
 
+/* AD BANNER PHOTO SELECTION */
+document.getElementById("adPhotoFileInput").addEventListener("change",function(e){
+const file=e.target.files[0];
+if(!file)return;
+compressImage(file,900,450,0.70,b64=>{
+compressedAdPhoto=b64;
+document.getElementById("adPhotoPreview").src=b64;
+document.getElementById("adPhotoPreviewDiv").classList.remove("hidden");
+});
+});
+
+function toggleAdTypeInputs() {
+const type = document.getElementById("adTypeSelect").value;
+document.getElementById("adPhotoInputDiv").classList.toggle("hidden", type !== "banner");
+document.getElementById("adVideoInputDiv").classList.toggle("hidden", type !== "video");
+}
+
 /* OTP LOGIN LOGIC */
 function initRecaptcha(){
 if(!window.recaptchaVerifier){
@@ -808,6 +925,7 @@ document.getElementById("userRoleBadge").innerText=role;
 document.getElementById("staffNavigation").classList.remove("hidden");
 
 document.getElementById("tabAdmin").classList.toggle("hidden",!admin);
+document.getElementById("tabManageAds").classList.toggle("hidden",!admin);
 document.getElementById("tabManageReporters").classList.toggle("hidden",!admin);
 
 switchTab("feed");
@@ -816,6 +934,7 @@ loadReporterWallet();
 if(admin){
 loadPendingNews();
 loadReportersForAdmin();
+loadAdsForAdmin();
 }
 loadNewsFeed();
 }
@@ -928,7 +1047,7 @@ document.getElementById("cardPhoto").src=rep.photo || DEFAULT_PHOTO;
 document.getElementById("icardModal").classList.remove("hidden");
 }
 
-/* SUBMIT NEWS ARTICLE */
+/* SUBMIT STANDARD NEWS ARTICLE */
 function submitArticle(){
 if(!currentUser || (!isAdmin && !isReporter)){
 return alert("पहले लॉगिन करें।");
@@ -939,7 +1058,6 @@ const location=document.getElementById("newsLocation").value.trim();
 const category=document.getElementById("newsCategory").value;
 const content=document.getElementById("newsContent").value.trim();
 const videoUrl=document.getElementById("newsVideoUrl").value.trim();
-const isShorts=document.getElementById("isShortsCheck").checked;
 
 if(!title || !location || !content){
 return alert("शीर्षक, क्षेत्र और खबर का विवरण भरें।");
@@ -956,7 +1074,7 @@ category:category,
 content:content,
 imageUrl:compressedNewsImage || "",
 videoUrl:videoUrl,
-isShorts:isShorts,
+isShorts:false,
 reporterPhone:currentUser.phoneNumber,
 reporterName:myProfile.name,
 reporterRole:isAdmin?"admin":"reporter",
@@ -970,13 +1088,61 @@ payoutAmount:30
 db.ref("news_articles").push(data).then(()=>{
 alert(isAdmin?"खबर प्रकाशित हो गई!":"खबर समीक्षा के लिए भेज दी गई!");
 ["newsTitle","newsLocation","newsContent","newsVideoUrl"].forEach(id=>document.getElementById(id).value="");
-document.getElementById("isShortsCheck").checked = false;
 removeSelectedImage();
 switchTab("feed");
 }).catch(err=>alert("खबर अपलोड नहीं हुई: "+err.message))
 .finally(()=>{
 btn.disabled=false;
 btn.innerText="समीक्षा हेतु भेजें";
+});
+}
+
+/* SUBMIT DEDICATED 50s SHORT VIDEO */
+function submitShortsArticle() {
+if(!currentUser || (!isAdmin && !isReporter)){
+return alert("पहले लॉगिन करें।");
+}
+
+const title = document.getElementById("shortTitle").value.trim();
+const location = document.getElementById("shortLocation").value.trim();
+const videoUrl = document.getElementById("shortVideoUrl").value.trim();
+
+if(!title || !location || !videoUrl){
+return alert("कृपया शॉर्ट्स का शीर्षक, स्थान और वीडियो लिंक भरें।");
+}
+
+const btn = document.getElementById("btnSubmitShorts");
+btn.disabled = true;
+btn.innerText = "अपलोड हो रहा है...";
+
+const data = {
+title: title,
+location: location,
+category: "शॉर्ट्स रील्स",
+content: "आवाज़ बुंदेलखंड न्यूज़ 50-सेकेंड स्पेशल ग्राउंड रील।",
+imageUrl: "",
+videoUrl: videoUrl,
+isShorts: true,
+reporterPhone: currentUser.phoneNumber,
+reporterName: myProfile.name,
+reporterRole: isAdmin ? "admin" : "reporter",
+reporterAddress: myProfile.address,
+reporterPhoto: myProfile.photo || DEFAULT_PHOTO,
+timestamp: Date.now(),
+status: isAdmin ? "approved" : "pending",
+payoutAmount: 30
+};
+
+db.ref("news_articles").push(data).then(()=>{
+alert(isAdmin ? "शॉर्ट वीडियो प्रकाशित हो गया!" : "शॉर्ट वीडियो समीक्षा हेतु भेज दिया गया!");
+document.getElementById("shortTitle").value = "";
+document.getElementById("shortLocation").value = "";
+document.getElementById("shortVideoUrl").value = "";
+switchTab("feed");
+}).catch(err => alert("त्रुटि: " + err.message))
+.finally(()=>{
+btn.disabled = false;
+btn.innerText = "शॉर्ट वीडियो प्रकाशित हेतु भेजें";
 });
 }
 
@@ -1030,8 +1196,133 @@ db.ref("news_articles/" + key).remove()
 }
 }
 
-/* NEWS FEED & LIVE TICKER RENDER */
+/* ================= AD MANAGEMENT FUNCTIONS ================= */
+function saveNewAdvertisement() {
+if (!isAdmin) return;
+const client = document.getElementById("adClientName").value.trim();
+const type = document.getElementById("adTypeSelect").value;
+const videoUrl = document.getElementById("adVideoUrlInput").value.trim();
+const actionLink = document.getElementById("adActionLink").value.trim();
+
+if (!client) {
+return alert("कृपया विज्ञापनदाता का नाम भरें।");
+}
+
+if (type === "banner" && !compressedAdPhoto) {
+return alert("कृपया विज्ञापन बैनर फोटो चुनें।");
+}
+
+if (type === "video" && !videoUrl) {
+return alert("कृपया विज्ञापन वीडियो लिंक भरें।");
+}
+
+const adData = {
+client: client,
+type: type,
+photo: compressedAdPhoto || "",
+videoUrl: videoUrl,
+actionLink: actionLink || "",
+active: true,
+timestamp: Date.now()
+};
+
+db.ref("sponsored_advertisements").push(adData).then(() => {
+alert("विज्ञापन सफलतापूर्वक लाइव पब्लिश हो गया!");
+document.getElementById("adClientName").value = "";
+document.getElementById("adVideoUrlInput").value = "";
+document.getElementById("adActionLink").value = "";
+document.getElementById("adPhotoFileInput").value = "";
+document.getElementById("adPhotoPreviewDiv").classList.add("hidden");
+compressedAdPhoto = "";
+loadAdsForAdmin();
+}).catch(err => alert("त्रुटि: " + err.message));
+}
+
+function loadAdsForAdmin() {
+db.ref("sponsored_advertisements").on("value", snap => {
+const box = document.getElementById("activeAdsListContainer");
+box.innerHTML = "";
+const ads = snap.val();
+
+if (!ads) {
+box.innerHTML = "<p class='text-xs text-gray-400'>कोई विज्ञापन सक्रिय नहीं है।</p>";
+return;
+}
+
+Object.entries(ads).forEach(([key, ad]) => {
+const item = document.createElement("div");
+item.className = "p-2.5 bg-gray-50 border rounded-lg flex items-center justify-between text-xs";
+item.innerHTML = `
+<div>
+<strong class="text-blue-900">${escapeHTML(ad.client)}</strong>
+<span class="text-[10px] text-gray-500 block">प्रकार: ${ad.type === 'video' ? 'वीडियो' : 'बैनर'}</span>
+</div>
+<button class="bg-red-600 text-white px-2.5 py-1 rounded text-xs font-bold" onclick="deleteAdvertisement('${key}')">हटाएं</button>
+`;
+box.appendChild(item);
+});
+});
+}
+
+function deleteAdvertisement(key) {
+if (!isAdmin) return;
+if (confirm("क्या आप इस विज्ञापन को हटाना चाहते हैं?")) {
+db.ref("sponsored_advertisements/" + key).remove();
+}
+}
+
+function renderPublicAds() {
+db.ref("sponsored_advertisements").on("value", snap => {
+const topBanner = document.getElementById("topAdBannerContainer");
+const ads = snap.val();
+
+if (!ads) {
+topBanner.classList.add("hidden");
+topBanner.innerHTML = "";
+return;
+}
+
+const activeAds = Object.values(ads);
+if (activeAds.length > 0) {
+const ad = activeAds[0];
+let adHtml = "";
+
+if (ad.type === "banner" && ad.photo) {
+adHtml = `
+<div class="bg-white p-2.5 rounded-2xl border shadow-sm space-y-1.5">
+<div class="flex justify-between items-center text-[9px] text-gray-400 font-bold uppercase">
+<span>प्रायोजित विज्ञापन (Sponsored)</span>
+<span class="text-blue-600">${escapeHTML(ad.client)}</span>
+</div>
+<a href="${ad.actionLink || '#'}" target="_blank" class="block overflow-hidden rounded-xl">
+<img src="${ad.photo}" class="w-full h-32 sm:h-44 object-cover rounded-xl">
+</a>
+</div>
+`;
+} else if (ad.type === "video" && ad.videoUrl) {
+adHtml = `
+<div class="bg-white p-2.5 rounded-2xl border shadow-sm space-y-1.5">
+<div class="flex justify-between items-center text-[9px] text-gray-400 font-bold uppercase">
+<span>प्रायोजित वीडियो विज्ञापन</span>
+<span class="text-blue-600">${escapeHTML(ad.client)}</span>
+</div>
+${renderUniversalMediaEmbed(ad.videoUrl)}
+</div>
+`;
+}
+
+topBanner.innerHTML = adHtml;
+topBanner.classList.remove("hidden");
+} else {
+topBanner.classList.add("hidden");
+}
+});
+}
+
+/* NEWS FEED & LIVE SLOW TICKER RENDER */
 function loadNewsFeed(){
+renderPublicAds();
+
 db.ref("news_articles").orderByChild("status").equalTo("approved").on("value",snap=>{
 const list=document.getElementById("newsFeedList");
 const shortsBar=document.getElementById("shortsBarContainer");
@@ -1055,7 +1346,7 @@ Object.entries(articles)
 .sort((a,b)=>(b[1].timestamp||0)-(a[1].timestamp||0))
 .forEach(([key,item])=>{
 
-// Headline for live ticker
+// Headline for live slow ticker
 tickerHeadlines.push(`${item.location}: ${item.title}`);
 
 // Render Shorts Bar
@@ -1168,7 +1459,7 @@ card.querySelector(".btnDelete").onclick = () => deleteArticleByAdmin(key);
 list.appendChild(card);
 });
 
-// Update ticker text
+// Update slow ticker text
 if (tickerHeadlines.length > 0) {
 tickerText.innerText = tickerHeadlines.join(" ••• ") + " ••• आवाज़ बुंदेलखंड न्यूज़ नेटवर्क";
 }
@@ -1242,11 +1533,10 @@ document.getElementById("reporterBalance").innerText=count*30;
 
 /* TAB SWITCHING */
 function switchTab(tab){
-if(tab==="admin" && !isAdmin)return;
-if(tab==="manageReporters" && !isAdmin)return;
-if((tab==="reporter" || tab==="wallet") && !currentUser)return;
+if((tab==="admin" || tab==="manageAds" || tab==="manageReporters") && !isAdmin)return;
+if((tab==="reporter" || tab==="shortsPost" || tab==="wallet") && !currentUser)return;
 
-["feed","reporter","wallet","admin","manageReporters"].forEach(t=>{
+["feed","reporter","shortsPost","wallet","admin","manageAds","manageReporters"].forEach(t=>{
 const section=document.getElementById(t+"Section");
 if(section)section.classList.add("hidden");
 const button=document.getElementById("tab"+t.charAt(0).toUpperCase()+t.slice(1));
