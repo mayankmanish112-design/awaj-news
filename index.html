@@ -1306,3 +1306,39 @@ evaluateRoleAndSetupUI(user);
 
 </body>
 </html>
+<button onclick="shareArticle()">शेयर करें</button>
+
+<script>
+function shareArticle() {
+  const title = document.title; // खबर की हेडलाइन
+  const url = window.location.href; // खबर का लिंक
+  const appDownloadUrl = "https://play.google.com/store/apps/details?id=YOUR_APP_PACKAGE_NAME"; // आपका प्ले स्टोर लिंक
+
+  const shareText = `${title}\n\nपूरी खबर पढ़ें:\n${url}\n\n📲 ताज़ा खबरों के लिए 'आवाज़ बुंदेलखंड' ऐप डाउनलोड करें:\n${appDownloadUrl}`;
+
+  if (navigator.share) {
+    navigator.share({
+      title: title,
+      text: shareText,
+    }).catch((error) => console.log('Sharing failed', error));
+  } else {
+    // अगर ब्राउज़र Web Share API सपोर्ट न करे तो डायरेक्ट WhatsApp पर भेजें
+    const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`;
+    window.open(whatsappUrl, '_blank');
+  }
+}
+</script>
+<a id="whatsappShareBtn" target="_blank" style="background-color: #25D366; color: white; padding: 8px 14px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+  WhatsApp पर शेयर करें
+</a>
+
+<script>
+  const headline = encodeURIComponent(document.title);
+  const currentUrl = encodeURIComponent(window.location.href);
+  const appUrl = encodeURIComponent("https://play.google.com/store/apps/details?id=YOUR_APP_PACKAGE_NAME");
+
+  const fullMessage = `${headline}%0A%0Aपूरी खबर पढ़ें:%0A${currentUrl}%0A%0A📲 ताज़ा खबरों के लिए 'आवाज़ बुंदेलखंड' ऐप डाउनलोड करें:%0A${appUrl}`;
+
+  document.getElementById("whatsappShareBtn").href = `https://api.whatsapp.com/send?text=${fullMessage}`;
+</script>
+
