@@ -99,7 +99,7 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 
 <main class="max-w-4xl mx-auto p-4 flex-grow w-full">
 
-<!-- ================= 1. USER AD BOOKING SECTION (ALWAYS READY) ================= -->
+<!-- ================= 1. USER AD BOOKING SECTION (WITH QR CODE & SCREENSHOT) ================= -->
 <section id="userAdSection" class="hidden bg-white p-5 rounded-2xl shadow-lg border-2 border-amber-400 space-y-4 mb-4">
 <div class="border-b pb-2 flex justify-between items-center">
 <div>
@@ -170,12 +170,12 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 <input id="uAdLink" class="w-full mt-1 border rounded-lg px-3 py-2 text-xs outline-none" placeholder="उदा. tel:8853252811 या WhatsApp लिंक">
 </div>
 
-<!-- ================= UPI PAYMENT BOX ================= -->
-<div class="bg-gradient-to-r from-emerald-900 to-teal-900 text-white p-4 rounded-2xl shadow space-y-3">
+<!-- ================= OFFICIAL QR CODE & SCREENSHOT SECTION ================= -->
+<div class="bg-gradient-to-r from-emerald-950 via-teal-900 to-slate-900 text-white p-4 rounded-2xl shadow-md space-y-3 border border-emerald-500">
 <div class="flex justify-between items-center border-b border-emerald-700 pb-2">
 <div>
-<span class="text-[10px] text-emerald-300 font-bold uppercase tracking-wider">एडमिन आधिकारिक UPI</span>
-<p class="text-sm font-black text-amber-300">8853252811@apl</p>
+<span class="text-[10px] text-emerald-300 font-bold uppercase tracking-wider">आधिकारिक QR कोड स्कैनर</span>
+<p class="text-xs font-black text-amber-300">UPI ID: 8853252811@apl</p>
 </div>
 <div class="text-right">
 <span class="text-[10px] text-emerald-300 font-bold">देय राशि</span>
@@ -183,23 +183,37 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 </div>
 </div>
 
-<p class="text-[10px] text-emerald-100">
-नीचे दिए गए बटन पर क्लिक करके सीधे PhonePe, Google Pay, या Paytm से तुरंत भुगतान करें:
+<!-- Display Your Actual QR Code Image -->
+<div class="bg-white p-3 rounded-2xl max-w-[210px] mx-auto text-center shadow-lg border-2 border-emerald-400">
+<img src="1000105861.jpg" alt="UPI QR Code" class="w-full h-auto object-contain mx-auto rounded-lg">
+<p class="text-[9px] text-slate-800 font-black mt-1.5 flex items-center justify-center gap-1">
+<i class="fa-solid fa-qrcode text-emerald-600"></i> किसी भी UPI ऐप से स्कैन करें
+</p>
+</div>
+
+<p class="text-[10px] text-emerald-100 text-center">
+ऊपर दिए गए QR कोड को PhonePe, Google Pay, या Paytm से स्कैन करके भुगतान करें।
 </p>
 
-<!-- Dynamic UPI Click-to-Pay Button -->
-<a id="btnDirectUpiPay" href="upi://pay?pa=8853252811@apl&pn=AwajBundelkhandNews&am=100&cu=INR" class="block w-full text-center bg-amber-400 hover:bg-amber-500 text-slate-950 font-black py-2.5 rounded-xl shadow transition">
-<i class="fa-solid fa-wallet"></i> अभी UPI से ₹100 पे करें
-</a>
-
-<div class="space-y-1.5 pt-1 border-t border-emerald-700">
-<label class="text-[10px] font-bold text-emerald-200">भुगतान के बाद 12 अंकों का UTR / Transaction No. दर्ज करें *</label>
-<input id="uAdUtr" placeholder="उदा. 4235XXXXXXXX (12 अंकों का UTR)" class="w-full p-2 rounded-lg text-xs text-slate-900 font-bold outline-none">
+<!-- Payment Screenshot Upload -->
+<div class="p-2.5 bg-black/40 border border-emerald-600/70 rounded-xl space-y-1.5">
+<label class="text-[11px] font-bold text-emerald-300 flex items-center gap-1.5">
+<i class="fa-solid fa-file-invoice text-amber-400"></i> भुगतान का स्क्रीनशॉट अपलोड करें *
+</label>
+<input type="file" id="uAdReceiptFile" accept="image/*" class="w-full text-xs border border-emerald-700 p-1 rounded bg-slate-900 text-white">
+<div id="uAdReceiptPrevBox" class="hidden mt-2 text-center">
+<img id="uAdReceiptPrevImg" class="max-h-36 mx-auto rounded border border-emerald-400 object-contain">
 </div>
 </div>
 
-<button id="btnSubmitUserAd" onclick="submitUserAd()" class="w-full bg-red-700 hover:bg-red-800 text-white font-black py-3 rounded-xl text-xs shadow transition">
-विज्ञापन समीक्षा हेतु एडमिन को सबमिट करें
+<div class="space-y-1 pt-1">
+<label class="text-[10px] font-bold text-emerald-200">12 अंकों का UTR / Transaction ID (वैकल्पिक)</label>
+<input id="uAdUtr" placeholder="उदा. 4235XXXXXXXX (UTR नंबर)" class="w-full p-2 rounded-lg text-xs text-slate-900 font-bold outline-none">
+</div>
+</div>
+
+<button id="btnSubmitUserAd" onclick="submitUserAd()" class="w-full bg-red-700 hover:bg-red-800 text-white font-black py-3 rounded-xl text-xs shadow transition flex items-center justify-center gap-2">
+<i class="fa-solid fa-paper-plane"></i> विज्ञापन और स्क्रीनशॉट एडमिन को सबमिट करें
 </button>
 </div>
 </section>
@@ -385,7 +399,7 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 </div>
 </section>
 
-<!-- ================= 7. MANAGE ADS & REVENUE (ADMIN ONLY) ================= -->
+<!-- ================= 7. MANAGE ADS & REVENUE (ADMIN WITH EDIT & DELETE) ================= -->
 <section id="manageAdsSection" class="hidden bg-white p-5 rounded-2xl border space-y-5">
 <div class="border-b pb-2 flex justify-between items-center">
 <div>
@@ -393,17 +407,18 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 <i class="fa-solid fa-rectangle-ad text-blue-600"></i>
 विज्ञापन अप्रूवल एवं UPI कमाई डेस्क
 </h3>
-<p class="text-[10px] text-gray-500">एडमिन UPI: <strong>8853252811@apl</strong></p>
+<p class="text-[10px] text-gray-500">QR कोड पेमेंट खाता: <strong>8853252811@apl</strong></p>
 </div>
 <div class="text-right">
-<span class="text-[10px] text-gray-500">कुल विज्ञापन कमाई:</span>
+<span class="text-[10px] text-gray-500">कुल प्राप्त कमाई:</span>
 <span id="totalAdEarnings" class="text-base font-black text-emerald-700 block">₹0</span>
 </div>
 </div>
 
+<!-- 1. PENDING USER ADS (WITH PAYMENT SCREENSHOT) -->
 <div class="space-y-2">
 <h4 class="text-xs font-bold text-slate-900 flex items-center justify-between">
-<span>यूज़र द्वारा भेजे गए लंबित विज्ञापन (पेमेंट चेक करें)</span>
+<span>यूज़र द्वारा भेजे गए लंबित विज्ञापन (पेमेंट स्क्रीनशॉट चेक करें)</span>
 <span id="pendingAdsCountBadge" class="bg-red-600 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">0</span>
 </h4>
 <div id="pendingAdsListContainer" class="space-y-3">
@@ -411,9 +426,10 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 </div>
 </div>
 
+<!-- 2. ACTIVE LIVE ADS (WITH EDIT & DELETE) -->
 <div class="pt-4 border-t space-y-2">
 <h4 class="text-xs font-bold text-slate-900">वर्तमान सक्रिय विज्ञापन (लाइव स्क्रीन पर चल रहे हैं)</h4>
-<div id="activeAdsListContainer" class="space-y-2">
+<div id="activeAdsListContainer" class="space-y-3">
 <p class="text-xs text-gray-400">कोई विज्ञापन सक्रिय नहीं है।</p>
 </div>
 </div>
@@ -454,6 +470,37 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 </section>
 
 </main>
+
+<!-- ================= EDIT AD MODAL (ADMIN ONLY) ================= -->
+<div id="editAdModal" class="fixed inset-0 bg-black/80 z-[1000000] flex items-center justify-center p-4 hidden">
+<div class="bg-white rounded-2xl p-5 max-w-sm w-full space-y-3">
+<div class="flex justify-between items-center border-b pb-2">
+<h3 class="text-sm font-bold text-slate-900"><i class="fa-solid fa-pen-to-square text-blue-600"></i> विज्ञापन संपादित करें (एडमिन)</h3>
+<button onclick="closeEditAdModal()" class="text-lg font-bold text-gray-500 hover:text-black">✕</button>
+</div>
+<input type="hidden" id="editAdKey">
+<div>
+<label class="text-xs font-semibold">फर्म / ग्राहक का नाम</label>
+<input id="editAdClient" class="w-full mt-0.5 border rounded-lg px-3 py-1.5 text-xs font-bold">
+</div>
+<div>
+<label class="text-xs font-semibold">मोबाइल नंबर</label>
+<input id="editAdPhone" class="w-full mt-0.5 border rounded-lg px-3 py-1.5 text-xs">
+</div>
+<div>
+<label class="text-xs font-semibold">कॉल / संपर्क लिंक</label>
+<input id="editAdActionLink" class="w-full mt-0.5 border rounded-lg px-3 py-1.5 text-xs">
+</div>
+<div>
+<label class="text-xs font-semibold">वीडियो लिंक (यदि वीडियो हो)</label>
+<input id="editAdVideoUrl" class="w-full mt-0.5 border rounded-lg px-3 py-1.5 text-xs">
+</div>
+<div class="flex gap-2 pt-2">
+<button onclick="saveEditedAd()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-lg text-xs">सेव करें</button>
+<button onclick="closeEditAdModal()" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg text-xs font-bold">रद्द करें</button>
+</div>
+</div>
+</div>
 
 <!-- EDIT NEWS MODAL (ADMIN ONLY) -->
 <div id="editNewsModal" class="fixed inset-0 bg-black/80 z-[1000000] flex items-center justify-center p-4 hidden">
@@ -619,6 +666,7 @@ let compressedNewsImage = "";
 let compressedRepPhoto = "";
 let userAdPhotoBase64 = "";
 let userAdVideoBase64 = "";
+let userAdReceiptBase64 = "";
 let galleryNewsVideoBase64 = "";
 let galleryShortVideoBase64 = "";
 
@@ -788,9 +836,6 @@ document.getElementById("uAdVideoDiv").classList.toggle("hidden", type !== "vide
 function updateUpiPayAmount() {
 const amount = document.getElementById("uAdPlan").value;
 document.getElementById("upiPayAmountBadge").innerText = "₹" + amount;
-const payBtn = document.getElementById("btnDirectUpiPay");
-payBtn.href = `upi://pay?pa=${ADMIN_UPI}&pn=AwajBundelkhandNews&am=${amount}&cu=INR`;
-payBtn.innerHTML = `<i class="fa-solid fa-wallet"></i> अभी UPI से ₹${amount} पे करें`;
 }
 
 document.getElementById("uAdPhotoFile").addEventListener("change", function(e) {
@@ -813,6 +858,17 @@ document.getElementById("uAdVideoPrevBox").classList.remove("hidden");
 });
 });
 
+/* PAYMENT RECEIPT/SCREENSHOT INPUT */
+document.getElementById("uAdReceiptFile").addEventListener("change", function(e) {
+const file = e.target.files[0];
+if (!file) return;
+compressImage(file, 900, 1200, 0.75, b64 => {
+userAdReceiptBase64 = b64;
+document.getElementById("uAdReceiptPrevImg").src = b64;
+document.getElementById("uAdReceiptPrevBox").classList.remove("hidden");
+});
+});
+
 function submitUserAd() {
 const name = document.getElementById("uAdName").value.trim();
 const phone = document.getElementById("uAdPhone").value.trim();
@@ -826,8 +882,8 @@ const finalVideo = userAdVideoBase64 || videoUrl;
 if (!name || !/^\d{10}$/.test(phone)) {
 return alert("कृपया अपना नाम और 10 अंकों का मोबाइल नंबर भरें।");
 }
-if (!utr) {
-return alert("कृपया UPI से भुगतान करने के बाद उसका UTR या ट्रांजेक्शन नंबर दर्ज करें!");
+if (!userAdReceiptBase64) {
+return alert("कृपया QR कोड पर भुगतान करने के बाद उसका स्क्रीनशॉट ज़रूर अपलोड करें!");
 }
 if (type === "banner" && !userAdPhotoBase64) {
 return alert("कृपया विज्ञापन पोस्टर फोटो चुनें।");
@@ -845,7 +901,8 @@ client: name,
 phone: phone,
 type: type,
 amount: parseInt(amount),
-utr: utr,
+utr: utr || "Receipt Attached",
+receiptPhoto: userAdReceiptBase64,
 photo: userAdPhotoBase64 || "",
 videoUrl: finalVideo || "",
 actionLink: link || "",
@@ -854,7 +911,7 @@ timestamp: Date.now()
 };
 
 db.ref("user_advertisements").push(adData).then(() => {
-alert(`धन्यवाद!\nआपका विज्ञापन (₹${amount} भुगतान विवरण UTR: ${utr} सहित) एडमिन मयंक सिंह जी के पास पहुंच गया है। बैंक से पेमेंट वेरिफाई होते ही यह लाइव हो जाएगा।`);
+alert(`धन्यवाद!\nआपका विज्ञापन और पेमेंट स्क्रीनशॉट एडमिन मयंक सिंह जी के पास पहुंच गया है। बैंक से पेमेंट वेरिफाई होते ही यह लाइव हो जाएगा।`);
 document.getElementById("uAdName").value = "";
 document.getElementById("uAdPhone").value = "";
 document.getElementById("uAdUtr").value = "";
@@ -862,20 +919,23 @@ document.getElementById("uAdLink").value = "";
 document.getElementById("uAdVideoUrl").value = "";
 document.getElementById("uAdPhotoFile").value = "";
 document.getElementById("uAdVideoFile").value = "";
+document.getElementById("uAdReceiptFile").value = "";
 document.getElementById("uAdPhotoPrevBox").classList.add("hidden");
 document.getElementById("uAdVideoPrevBox").classList.add("hidden");
+document.getElementById("uAdReceiptPrevBox").classList.add("hidden");
 userAdPhotoBase64 = "";
 userAdVideoBase64 = "";
+userAdReceiptBase64 = "";
 closeUserAdSection();
 switchTab("feed");
 }).catch(err => alert("त्रुटि: " + err.message))
 .finally(() => {
 btn.disabled = false;
-btn.innerText = "विज्ञापन समीक्षा हेतु एडमिन को सबमिट करें";
+btn.innerText = "विज्ञापन और स्क्रीनशॉट एडमिन को सबमिट करें";
 });
 }
 
-/* ADMIN AD APPROVAL & EARNINGS */
+/* ================= ADMIN AD APPROVAL, EDIT & DELETE ================= */
 function loadAdsForAdmin() {
 db.ref("user_advertisements").on("value", snap => {
 const pendingBox = document.getElementById("pendingAdsListContainer");
@@ -899,18 +959,35 @@ item.innerHTML = `
 <div>
 <strong class="text-blue-900">${escapeHTML(ad.client)}</strong> (मो: ${escapeHTML(ad.phone)})
 <span class="text-[10px] text-gray-500 block">प्रकार: ${ad.type === 'video' ? 'वीडियो' : 'बैनर'} • प्राप्त राशि: <strong class="text-emerald-700">₹${ad.amount}</strong></span>
-<span class="text-[9px] text-gray-400">UTR: ${escapeHTML(ad.utr)}</span>
+<span class="text-[9px] text-gray-400">लिंक: ${escapeHTML(ad.actionLink || 'N/A')}</span>
 </div>
+<div class="flex items-center gap-1.5">
+<button class="bg-amber-500 hover:bg-amber-600 text-slate-950 px-2.5 py-1 rounded text-xs font-bold" onclick="openEditAdModal('${key}', '${escapeHTML(ad.client)}', '${escapeHTML(ad.phone)}', '${escapeHTML(ad.actionLink || '')}', '${escapeHTML(ad.videoUrl || '')}')">एडिट</button>
 <button class="bg-red-600 hover:bg-red-700 text-white px-2.5 py-1 rounded text-xs font-bold" onclick="removeAdvertisement('${key}')">हटाएं</button>
+</div>
 `;
 activeBox.appendChild(item);
 } else if (ad.status === "pending") {
 pendingCount++;
+
 let mediaPrev = "";
 if (ad.type === "banner" && ad.photo) {
-mediaPrev = `<img src="${ad.photo}" class="h-28 object-contain rounded my-1 border bg-white">`;
+mediaPrev = `<div class="text-left"><p class="text-[9px] font-bold text-gray-500">विज्ञापन पोस्टर:</p><img src="${ad.photo}" class="h-28 object-contain rounded my-1 border bg-white"></div>`;
 } else if (ad.type === "video" && ad.videoUrl) {
 mediaPrev = `<div class="max-w-xs my-1">${renderUniversalMediaEmbed(ad.videoUrl)}</div>`;
+}
+
+let receiptPrev = "";
+if (ad.receiptPhoto) {
+receiptPrev = `
+<div class="p-2 bg-emerald-50 rounded border border-emerald-400">
+<p class="text-[10px] font-black text-emerald-900 mb-1"><i class="fa-solid fa-receipt"></i> यूज़र द्वारा भेजा गया पेमेंट स्क्रीनशॉट:</p>
+<a href="${ad.receiptPhoto}" target="_blank">
+<img src="${ad.receiptPhoto}" class="max-h-48 rounded border border-emerald-500 object-contain mx-auto bg-white shadow-sm">
+</a>
+<p class="text-[8px] text-gray-500 text-center mt-0.5">(बड़ा देखने के लिए फोटो पर क्लिक करें)</p>
+</div>
+`;
 }
 
 const item = document.createElement("div");
@@ -921,14 +998,16 @@ item.innerHTML = `
 <span class="bg-emerald-700 text-white px-2 py-0.5 rounded font-black">₹${ad.amount} भेजा गया</span>
 </div>
 <p class="text-[11px] text-slate-700">मोबाइल: <strong>${escapeHTML(ad.phone)}</strong> | प्रकार: <strong>${ad.type === 'video' ? 'वीडियो' : 'बैनर'}</strong></p>
-<div class="p-2 bg-white rounded border border-emerald-400 text-slate-900">
-<strong>UPI UTR / Ref No:</strong> <span class="font-mono text-emerald-800 font-black">${escapeHTML(ad.utr)}</span>
-<p class="text-[9px] text-gray-500 mt-0.5">कृपया अपने 8853252811@apl खाते में सत्यापन करें।</p>
-</div>
+<p class="text-[10px] text-gray-600 font-mono">UTR/Ref: ${escapeHTML(ad.utr)}</p>
+${receiptPrev}
 ${mediaPrev}
 <div class="flex gap-2 pt-1 border-t">
-<button onclick="approveAd('${key}')" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1.5 rounded-lg text-xs">✓ पेमेंट प्राप्त हुई - लाइव करें</button>
-<button onclick="rejectAd('${key}')" class="bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs">अस्वीकार</button>
+<button onclick="approveAd('${key}')" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1.5 rounded-lg text-xs">
+✓ पेमेंट प्राप्त हुई - लाइव करें
+</button>
+<button onclick="removeAdvertisement('${key}')" class="bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs">
+अस्वीकार व हटाएं
+</button>
 </div>
 `;
 pendingBox.appendChild(item);
@@ -943,28 +1022,58 @@ if (activeBox.children.length === 0) activeBox.innerHTML = "<p class='text-xs te
 });
 }
 
+function openEditAdModal(key, client, phone, actionLink, videoUrl) {
+if (!isAdmin) return;
+document.getElementById("editAdKey").value = key;
+document.getElementById("editAdClient").value = client;
+document.getElementById("editAdPhone").value = phone;
+document.getElementById("editAdActionLink").value = actionLink;
+document.getElementById("editAdVideoUrl").value = videoUrl;
+document.getElementById("editAdModal").classList.remove("hidden");
+}
+
+function closeEditAdModal() {
+document.getElementById("editAdModal").classList.add("hidden");
+}
+
+function saveEditedAd() {
+if (!isAdmin) return;
+const key = document.getElementById("editAdKey").value;
+const client = document.getElementById("editAdClient").value.trim();
+const phone = document.getElementById("editAdPhone").value.trim();
+const actionLink = document.getElementById("editAdActionLink").value.trim();
+const videoUrl = document.getElementById("editAdVideoUrl").value.trim();
+
+if (!client || !phone) return alert("कृपया नाम और मोबाइल नंबर भरें।");
+
+db.ref("user_advertisements/" + key).update({
+client: client,
+phone: phone,
+actionLink: actionLink,
+videoUrl: videoUrl
+}).then(() => {
+alert("विज्ञापन सफलतापूर्वक अपडेट हो गया!");
+closeEditAdModal();
+}).catch(err => alert("त्रुटि: " + err.message));
+}
+
 function approveAd(key) {
 if (!isAdmin) return;
 db.ref("user_advertisements/" + key).update({ status: "approved" })
-.then(() => alert("विज्ञापन स्वीकृत कर दिया गया है!"))
+.then(() => alert("विज्ञापन स्वीकृत कर दिया गया है और अब मुख्य स्क्रीन पर लाइव दिखेगा!"))
 .catch(err => alert("त्रुटि: " + err.message));
-}
-
-function rejectAd(key) {
-if (!isAdmin) return;
-if (confirm("क्या आप इस विज्ञापन को अस्वीकार करना चाहते हैं?")) {
-db.ref("user_advertisements/" + key).update({ status: "rejected" });
-}
 }
 
 function removeAdvertisement(key) {
 if (!isAdmin) return;
-if (confirm("क्या आप इस विज्ञापन को हटाना चाहते हैं?")) {
-db.ref("user_advertisements/" + key).remove();
+if (confirm("क्या आप वाकई इस विज्ञापन को हमेशा के लिए हटाना चाहते हैं?")) {
+db.ref("user_advertisements/" + key).remove()
+.then(() => alert("विज्ञापन हटा दिया गया है।"))
+.catch(err => alert("त्रुटि: " + err.message));
 }
 }
 
-/* RENDER PUBLIC ADS (UNCONSTRAINED ORIGINAL SIZE) */
+/* RENDER PUBLIC ADS */
 function renderPublicAds() {
 db.ref("user_advertisements").orderByChild("status").equalTo("approved").on("value", snap => {
 const container = document.getElementById("multipleAdsContainer");
