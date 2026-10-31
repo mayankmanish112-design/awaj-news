@@ -51,7 +51,12 @@ box-shadow:none;
 </div>
 </div>
 
-<div id="authHeaderArea">
+<div id="authHeaderArea" class="flex items-center gap-2">
+<!-- User Ad Button -->
+<button type="button" onclick="switchTab('userAdSection')" class="text-xs bg-amber-400 hover:bg-amber-500 text-slate-950 font-black px-2.5 py-1.5 rounded-full shadow-sm flex items-center gap-1">
+<i class="fa-solid fa-bullhorn text-red-700"></i> प्रचार दें
+</button>
+
 <button type="button" id="btnLoginOpen"
 onclick="document.getElementById('authModal').classList.remove('hidden')"
 class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-sm hover:bg-gray-100">
@@ -93,7 +98,7 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 
 <button onclick="switchTab('admin')" id="tabAdmin" class="navtab hidden py-3 px-2 border-b-2 border-transparent text-gray-500 whitespace-nowrap">ख़बर समीक्षा</button>
 
-<button onclick="switchTab('manageAds')" id="tabManageAds" class="navtab hidden py-3 px-2 border-b-2 border-transparent text-gray-500 whitespace-nowrap"><i class="fa-solid fa-rectangle-ad text-blue-600"></i> विज्ञापन प्रबंधन</button>
+<button onclick="switchTab('manageAds')" id="tabManageAds" class="navtab hidden py-3 px-2 border-b-2 border-transparent text-gray-500 whitespace-nowrap"><i class="fa-solid fa-rectangle-ad text-blue-600"></i> विज्ञापन अप्रूवल व खाता</button>
 
 <button onclick="switchTab('manageReporters')" id="tabManageReporters" class="navtab hidden py-3 px-2 border-b-2 border-transparent text-gray-500 whitespace-nowrap">रिपोर्टर व आई-कार्ड</button>
 
@@ -119,8 +124,10 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 </div>
 </div>
 
-<!-- LIVE SPONSORED AD BANNER (TOP) - SHOWS IN ORIGINAL SIZE WITHOUT CROPPING -->
-<div id="topAdBannerContainer" class="hidden"></div>
+<!-- MULTIPLE LIVE SPONSORED ADS (CAROUSEL / STACK) -->
+<div id="multipleAdsContainer" class="space-y-3 hidden">
+<!-- Dynamic Ads Injected Here -->
+</div>
 
 <div class="flex items-center justify-between pb-2 border-b">
 <h3 class="text-sm font-bold text-gray-800 flex items-center gap-2">
@@ -134,6 +141,111 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 <p class="text-center text-xs text-gray-400 py-8">समाचार लोड हो रहे हैं...</p>
 </div>
 
+</section>
+
+<!-- ================= USER AD BOOKING SECTION (FOR ALL USERS) ================= -->
+<section id="userAdSection" class="hidden bg-white p-5 rounded-2xl shadow border space-y-4">
+<div class="border-b pb-2 flex justify-between items-center">
+<div>
+<h3 class="text-sm font-black text-slate-900 flex items-center gap-1.5">
+<i class="fa-solid fa-bullhorn text-amber-500"></i> अपना विज्ञापन / प्रचार प्रकाशित करवाएं
+</h3>
+<p class="text-[10px] text-slate-500">दुकान, कोचिंग, हॉस्पिटल, व्यापार या बधाई संदेश का प्रचार करें</p>
+</div>
+<button onclick="switchTab('feed')" class="text-xs font-bold text-gray-400 hover:text-black">✕ बंद करें</button>
+</div>
+
+<div class="space-y-3 text-xs">
+<div>
+<label class="font-bold text-gray-700">फर्म / दुकान / व्यक्ति का नाम *</label>
+<input id="uAdName" class="w-full mt-1 border rounded-lg px-3 py-2 text-xs" placeholder="उदा. राधे ज्वैलर्स, सरीला">
+</div>
+
+<div>
+<label class="font-bold text-gray-700">मोबाइल नंबर (WhatsApp) *</label>
+<input id="uAdPhone" type="tel" maxlength="10" class="w-full mt-1 border rounded-lg px-3 py-2 text-xs" placeholder="10 अंकों का मोबाइल नंबर">
+</div>
+
+<div class="grid grid-cols-2 gap-2">
+<div>
+<label class="font-bold text-gray-700">विज्ञापन का प्रकार *</label>
+<select id="uAdType" onchange="toggleUserAdTypeInputs()" class="w-full mt-1 border rounded-lg px-3 py-2 text-xs font-bold bg-slate-50">
+<option value="banner">बैनर / पोस्टर फोटो</option>
+<option value="video">वीडियो विज्ञापन</option>
+</select>
+</div>
+<div>
+<label class="font-bold text-gray-700">अवधि एवं शुल्क *</label>
+<select id="uAdPlan" onchange="updateUpiPayAmount()" class="w-full mt-1 border rounded-lg px-3 py-2 text-xs font-bold text-emerald-800 bg-slate-50">
+<option value="100">1 दिन (24 घंटे) - ₹100</option>
+<option value="500">7 दिन (1 सप्ताह) - ₹500</option>
+<option value="1500">30 दिन (1 माह) - ₹1500</option>
+</select>
+</div>
+</div>
+
+<!-- Photo Input -->
+<div id="uAdPhotoDiv" class="p-3 bg-slate-50 border rounded-xl space-y-1">
+<label class="font-bold text-gray-700 block">विज्ञापन का पोस्टर / फोटो चुनें:</label>
+<input type="file" id="uAdPhotoFile" accept="image/*" class="w-full text-xs border p-1 rounded bg-white">
+<div id="uAdPhotoPrevBox" class="hidden mt-2 text-center">
+<img id="uAdPhotoPrevImg" class="max-h-48 mx-auto rounded border">
+</div>
+</div>
+
+<!-- Video Input -->
+<div id="uAdVideoDiv" class="hidden p-3 bg-slate-50 border rounded-xl space-y-2">
+<div>
+<label class="font-bold text-gray-700 block mb-0.5">1. गैलरी से वीडियो फ़ाइल (छोटा वीडियो 10MB तक):</label>
+<input type="file" id="uAdVideoFile" accept="video/*" class="w-full text-xs border p-1 rounded bg-white">
+<div id="uAdVideoPrevBox" class="hidden mt-2 text-center">
+<video id="uAdVideoPrevVid" controls class="max-h-40 mx-auto rounded border bg-black"></video>
+</div>
+</div>
+<div class="text-center text-[10px] font-bold text-gray-400">-- अथवा --</div>
+<div>
+<label class="font-bold text-gray-700 block mb-0.5">2. यूट्यूब / फेसबुक वीडियो का लिंक:</label>
+<input type="url" id="uAdVideoUrl" placeholder="https://youtube.com/..." class="w-full border rounded-lg px-3 py-1.5 text-xs bg-white">
+</div>
+</div>
+
+<div>
+<label class="font-bold text-gray-700">कॉल / संपर्क लिंक (ग्राहक कहाँ संपर्क करें):</label>
+<input id="uAdLink" class="w-full mt-1 border rounded-lg px-3 py-2 text-xs" placeholder="उदा. tel:9876543210 या WhatsApp लिंक">
+</div>
+
+<!-- ================= UPI PAYMENT BOX ================= -->
+<div class="bg-gradient-to-r from-emerald-900 to-teal-900 text-white p-4 rounded-2xl shadow space-y-3">
+<div class="flex justify-between items-center border-b border-emerald-700 pb-2">
+<div>
+<span class="text-[10px] text-emerald-300 font-bold uppercase tracking-wider">एडमिन आधिकारिक UPI</span>
+<p class="text-sm font-black text-amber-300">8853252811@apl</p>
+</div>
+<div class="text-right">
+<span class="text-[10px] text-emerald-300 font-bold">देय राशि</span>
+<p id="upiPayAmountBadge" class="text-lg font-black text-white">₹100</p>
+</div>
+</div>
+
+<p class="text-[10px] text-emerald-100">
+नीचे दिए गए बटन पर क्लिक करके सीधे PhonePe, Google Pay, या Paytm से तुरंत भुगतान करें:
+</p>
+
+<!-- Dynamic UPI Click-to-Pay Button -->
+<a id="btnDirectUpiPay" href="upi://pay?pa=8853252811@apl&pn=AwajBundelkhandNews&am=100&cu=INR" class="block w-full text-center bg-amber-400 hover:bg-amber-500 text-slate-950 font-black py-2.5 rounded-xl shadow transition">
+<i class="fa-solid fa-wallet"></i> अभी UPI से ₹100 पे करें
+</a>
+
+<div class="space-y-1.5 pt-1 border-t border-emerald-700">
+<label class="text-[10px] font-bold text-emerald-200">भुगतान के बाद UTR / Transaction No. दर्ज करें *</label>
+<input id="uAdUtr" placeholder="उदा. 4235XXXXXXXX (12 अंकों का UTR)" class="w-full p-2 rounded-lg text-xs text-slate-900 font-bold outline-none">
+</div>
+</div>
+
+<button id="btnSubmitUserAd" onclick="submitUserAd()" class="w-full bg-red-700 hover:bg-red-800 text-white font-black py-3 rounded-xl text-xs shadow transition">
+विज्ञापन समीक्षा हेतु एडमिन को सबमिट करें
+</button>
+</div>
 </section>
 
 <!-- ================= REPORTER NEWS POST SECTION ================= -->
@@ -177,13 +289,12 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 </div>
 </div>
 
-<!-- VIDEO ATTACHMENT (GALLERY OR URL LINK) -->
+<!-- VIDEO ATTACHMENT -->
 <div class="p-3 bg-red-50/70 border border-red-200 rounded-xl space-y-2">
 <label class="text-xs font-bold text-red-900 flex items-center gap-1.5">
 <i class="fa-solid fa-video text-red-600"></i> खबर का वीडियो अटैच करें (गैलरी से या लिंक द्वारा)
 </label>
 
-<!-- Gallery File Input -->
 <div>
 <label class="text-[11px] font-semibold text-gray-700 block mb-0.5">1. मोबाइल गैलरी से वीडियो चुनें (MP4/WebM):</label>
 <input type="file" id="newsVideoFileInput" accept="video/*" class="w-full text-xs border p-1 rounded bg-white">
@@ -195,7 +306,6 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 
 <div class="text-center text-[10px] font-bold text-gray-400">-- अथवा लिंक डालें --</div>
 
-<!-- URL Link Input -->
 <div>
 <label class="text-[11px] font-semibold text-gray-700 block mb-0.5">2. यूट्यूब / फेसबुक लाइव या वेब वीडियो का लिंक:</label>
 <input type="url" id="newsVideoUrl" placeholder="https://youtube.com/watch?v=... या FB Live लिंक" class="w-full border rounded-lg px-3 py-1.5 text-xs bg-white">
@@ -232,7 +342,6 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 <input id="shortLocation" class="w-full mt-1 border rounded-lg px-3 py-2 text-sm" placeholder="हमीरपुर, सरीला">
 </div>
 
-<!-- Option 1: File from gallery -->
 <div class="p-3 bg-red-50 border border-red-200 rounded-xl space-y-2">
 <label class="text-xs font-bold text-red-900 flex items-center gap-1.5">
 <i class="fa-solid fa-photo-film text-red-600"></i> गैलरी से शॉर्ट वीडियो अपलोड करें (MP4/WebM)
@@ -246,7 +355,6 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 
 <div class="text-center text-xs font-bold text-gray-400">-- अथवा --</div>
 
-<!-- Option 2: Link -->
 <div>
 <label class="text-xs font-semibold block mb-1">शॉर्ट वीडियो लिंक (YouTube Shorts, FB Video, या डायरेक्ट MP4 लिंक)</label>
 <input type="url" id="shortVideoUrl" placeholder="https://youtube.com/shorts/... या MP4 लिंक" class="w-full border rounded-lg px-3 py-2 text-xs">
@@ -289,69 +397,36 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 
 </section>
 
-<!-- ================= MANAGE ADS (ADMIN ONLY) ================= -->
-<section id="manageAdsSection" class="hidden bg-white p-5 rounded-2xl border space-y-4">
-<h3 class="text-sm font-bold border-b pb-2 flex items-center gap-1.5 text-blue-900">
+<!-- ================= MANAGE ADS & REVENUE (ADMIN ONLY) ================= -->
+<section id="manageAdsSection" class="hidden bg-white p-5 rounded-2xl border space-y-5">
+<div class="border-b pb-2 flex justify-between items-center">
+<div>
+<h3 class="text-sm font-bold text-blue-900 flex items-center gap-1.5">
 <i class="fa-solid fa-rectangle-ad text-blue-600"></i>
-विज्ञापन प्रबंधन (ओरिजिनल साइज़ फोटो व वीडियो विज्ञापन)
+विज्ञापन अप्रूवल एवं UPI कमाई डेस्क
 </h3>
-
-<div class="bg-blue-50 border border-blue-200 rounded-xl p-4 space-y-3">
-<h4 class="text-xs font-bold text-blue-900">नया विज्ञापन जोड़ें (लोकल स्पॉन्सरशिप)</h4>
-
-<div>
-<label class="text-[11px] font-bold text-gray-700">विज्ञापनदाता / संस्थान का नाम *</label>
-<input id="adClientName" class="w-full mt-1 border rounded-lg px-3 py-1.5 text-xs bg-white" placeholder="उदा. गुप्ता ज्वैलर्स, राठ">
+<p class="text-[10px] text-gray-500">एडमिन UPI: <strong>8853252811@apl</strong></p>
 </div>
-
-<div>
-<label class="text-[11px] font-bold text-gray-700">विज्ञापन का प्रकार *</label>
-<select id="adTypeSelect" onchange="toggleAdTypeInputs()" class="w-full mt-1 border rounded-lg px-3 py-1.5 text-xs bg-white font-bold">
-<option value="banner">बैनर फोटो विज्ञापन (मूल साइज़ में दिखेगा)</option>
-<option value="video">वीडियो विज्ञापन (मूल साइज़ में दिखेगा)</option>
-</select>
-</div>
-
-<!-- Banner Input -->
-<div id="adPhotoInputDiv">
-<label class="text-[11px] font-bold text-gray-700 block mb-0.5">गैलरी से विज्ञापन बैनर फोटो चुनें (जो भी साइज़ हो):</label>
-<input type="file" id="adPhotoFileInput" accept="image/*" class="w-full text-xs border p-1 rounded bg-white">
-<div id="adPhotoPreviewDiv" class="hidden mt-2 p-1 border rounded-lg bg-gray-50 text-center">
-<img id="adPhotoPreview" class="max-h-60 mx-auto w-auto object-contain rounded">
-<p class="text-[9px] text-gray-500 mt-1">यह फोटो बिना क्रॉप किए इसी मूल साइज़ में लाइव दिखेगी।</p>
+<div class="text-right">
+<span class="text-[10px] text-gray-500">कुल विज्ञापन कमाई:</span>
+<span id="totalAdEarnings" class="text-base font-black text-emerald-700 block">₹0</span>
 </div>
 </div>
 
-<!-- Video Inputs (Gallery or URL) -->
-<div id="adVideoInputDiv" class="hidden space-y-2">
-<div class="p-2.5 bg-white border rounded-lg space-y-1">
-<label class="text-[11px] font-bold text-gray-700 block">1. गैलरी से विज्ञापन वीडियो अपलोड करें</label>
-<input type="file" id="adVideoFileInput" accept="video/*" class="w-full text-xs border p-1 rounded">
-<div id="adVideoPreviewDiv" class="hidden mt-2 text-center">
-<video id="adVideoLocalPreview" controls class="max-h-60 mx-auto w-auto rounded-lg border bg-black"></video>
-<button type="button" onclick="removeAdVideoFile()" class="text-[10px] text-red-600 font-bold hover:underline mt-1 block">गैलरी वीडियो हटाएं</button>
+<!-- 1. PENDING USER ADS APPROVAL -->
+<div class="space-y-2">
+<h4 class="text-xs font-bold text-slate-900 flex items-center justify-between">
+<span>यूज़र द्वारा भेजे गए लंबित विज्ञापन (पेमेंट चेक करें)</span>
+<span id="pendingAdsCountBadge" class="bg-red-600 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">0</span>
+</h4>
+<div id="pendingAdsListContainer" class="space-y-3">
+<p class="text-xs text-gray-400">कोई नया विज्ञापन लंबित नहीं है।</p>
 </div>
 </div>
 
-<div class="p-2.5 bg-white border rounded-lg space-y-1">
-<label class="text-[11px] font-bold text-gray-700 block">2. अथवा विज्ञापन वीडियो लिंक पेस्ट करें (YouTube / MP4)</label>
-<input type="url" id="adVideoUrlInput" placeholder="https://youtube.com/watch?v=..." class="w-full border rounded-lg px-3 py-1.5 text-xs">
-</div>
-</div>
-
-<div>
-<label class="text-[11px] font-bold text-gray-700">कॉल / संपर्क नंबर या वेबसाइट लिंक (वैकल्पिक)</label>
-<input id="adActionLink" class="w-full mt-1 border rounded-lg px-3 py-1.5 text-xs bg-white" placeholder="उदा. tel:9876543210 या वेबसाइट URL">
-</div>
-
-<button type="button" onclick="saveNewAdvertisement()" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-2 rounded-lg text-xs shadow transition">
-+ विज्ञापन लाइव पब्लिश करें
-</button>
-</div>
-
-<!-- Active Ads List -->
-<div class="pt-2">
-<h4 class="text-xs font-bold text-gray-800 mb-2">वर्तमान सक्रिय विज्ञापन</h4>
+<!-- 2. ACTIVE LIVE ADS (MULTIPLE ADS MANAGEMENT) -->
+<div class="pt-4 border-t space-y-2">
+<h4 class="text-xs font-bold text-slate-900">वर्तमान सक्रिय विज्ञापन (लाइव स्क्रीन पर चल रहे हैं)</h4>
 <div id="activeAdsListContainer" class="space-y-2">
 <p class="text-xs text-gray-400">कोई विज्ञापन सक्रिय नहीं है।</p>
 </div>
@@ -510,7 +585,6 @@ class="bg-red-700 text-white px-5 py-2.5 rounded-lg text-xs font-bold">
 </div>
 
 <div class="relative flex-1 flex items-center justify-center bg-black overflow-hidden" id="shortsPlayerContainer">
-<!-- Video or Iframe Injected -->
 </div>
 
 <div class="p-4 z-20 text-white bg-gradient-to-t from-black/90 to-transparent space-y-1">
@@ -682,6 +756,7 @@ const auth = firebase.auth();
 const db = firebase.database();
 
 const ADMIN_PHONE = "+918853252811";
+const ADMIN_UPI = "8853252811@apl";
 const PAYOUT_PER_NEWS = 30;
 
 let currentUser = null;
@@ -692,10 +767,10 @@ let isReporter = false;
 let adminPhoto = "";
 let compressedNewsImage = "";
 let compressedRepPhoto = "";
-let compressedAdPhoto = "";
+let userAdPhotoBase64 = "";
+let userAdVideoBase64 = "";
 let galleryNewsVideoBase64 = "";
 let galleryShortVideoBase64 = "";
-let galleryAdVideoBase64 = "";
 
 let myProfile = {
 name:"संवाददाता",
@@ -785,7 +860,7 @@ document.getElementById("shortsPlayerContainer").innerHTML = "";
 document.getElementById("shortsModal").classList.add("hidden");
 }
 
-/* IMAGE COMPRESSION (MAINTAINING NATURAL PROPORTIONS) */
+/* IMAGE COMPRESSION */
 function compressImage(file,maxWidth,maxHeight,quality,callback){
 if(!file || !file.type.startsWith("image/")){
 alert("कृपया सही फोटो चुनें।");
@@ -817,6 +892,10 @@ reader.readAsDataURL(file);
 function readVideoFileAsBase64(file, callback) {
 if(!file || !file.type.startsWith("video/")) {
 alert("कृपया सही वीडियो फ़ाइल चुनें।");
+return;
+}
+if(file.size > 12 * 1024 * 1024) {
+alert("चेतावनी: वीडियो 12 MB से बड़ा है! कृपया छोटा वीडियो चुनें या YouTube लिंक का उपयोग करें।");
 return;
 }
 const reader = new FileReader();
@@ -863,23 +942,251 @@ document.getElementById("shortVideoLocalPreview").src = "";
 document.getElementById("shortVideoPreviewContainer").classList.add("hidden");
 }
 
-/* GALLERY VIDEO SELECTION FOR ADS */
-document.getElementById("adVideoFileInput").addEventListener("change", function(e) {
+/* ================= USER AD BOOKING LOGIC ================= */
+function toggleUserAdTypeInputs() {
+const type = document.getElementById("uAdType").value;
+document.getElementById("uAdPhotoDiv").classList.toggle("hidden", type !== "banner");
+document.getElementById("uAdVideoDiv").classList.toggle("hidden", type !== "video");
+}
+
+function updateUpiPayAmount() {
+const amount = document.getElementById("uAdPlan").value;
+document.getElementById("upiPayAmountBadge").innerText = "₹" + amount;
+const payBtn = document.getElementById("btnDirectUpiPay");
+payBtn.href = `upi://pay?pa=${ADMIN_UPI}&pn=AwajBundelkhandNews&am=${amount}&cu=INR`;
+payBtn.innerHTML = `<i class="fa-solid fa-wallet"></i> अभी UPI से ₹${amount} पे करें`;
+}
+
+document.getElementById("uAdPhotoFile").addEventListener("change", function(e) {
 const file = e.target.files[0];
 if (!file) return;
-readVideoFileAsBase64(file, b64 => {
-galleryAdVideoBase64 = b64;
-const prev = document.getElementById("adVideoLocalPreview");
-prev.src = b64;
-document.getElementById("adVideoPreviewDiv").classList.remove("hidden");
+compressImage(file, 1200, 1200, 0.80, b64 => {
+userAdPhotoBase64 = b64;
+document.getElementById("uAdPhotoPrevImg").src = b64;
+document.getElementById("uAdPhotoPrevBox").classList.remove("hidden");
 });
 });
 
-function removeAdVideoFile() {
-galleryAdVideoBase64 = "";
-document.getElementById("adVideoFileInput").value = "";
-document.getElementById("adVideoLocalPreview").src = "";
-document.getElementById("adVideoPreviewDiv").classList.add("hidden");
+document.getElementById("uAdVideoFile").addEventListener("change", function(e) {
+const file = e.target.files[0];
+if (!file) return;
+readVideoFileAsBase64(file, b64 => {
+userAdVideoBase64 = b64;
+document.getElementById("uAdVideoPrevVid").src = b64;
+document.getElementById("uAdVideoPrevBox").classList.remove("hidden");
+});
+});
+
+function submitUserAd() {
+const name = document.getElementById("uAdName").value.trim();
+const phone = document.getElementById("uAdPhone").value.trim();
+const type = document.getElementById("uAdType").value;
+const amount = document.getElementById("uAdPlan").value;
+const utr = document.getElementById("uAdUtr").value.trim();
+const link = document.getElementById("uAdLink").value.trim();
+const videoUrl = document.getElementById("uAdVideoUrl").value.trim();
+const finalVideo = userAdVideoBase64 || videoUrl;
+
+if (!name || !/^\d{10}$/.test(phone)) {
+return alert("कृपया अपना नाम और 10 अंकों का मोबाइल नंबर भरें।");
+}
+
+if (!utr) {
+return alert("कृपया UPI से भुगतान करने के बाद उसका UTR या ट्रांजेक्शन नंबर ज़रूर भरें!");
+}
+
+if (type === "banner" && !userAdPhotoBase64) {
+return alert("कृपया विज्ञापन बैनर फोटो चुनें।");
+}
+
+if (type === "video" && !finalVideo) {
+return alert("कृपया विज्ञापन वीडियो चुनें या लिंक डालें।");
+}
+
+const btn = document.getElementById("btnSubmitUserAd");
+btn.disabled = true;
+btn.innerText = "विज्ञापन सबमिट हो रहा है...";
+
+const adData = {
+client: name,
+phone: phone,
+type: type,
+amount: parseInt(amount),
+utr: utr,
+photo: userAdPhotoBase64 || "",
+videoUrl: finalVideo || "",
+actionLink: link || "",
+status: "pending",
+timestamp: Date.now()
+};
+
+db.ref("user_advertisements").push(adData).then(() => {
+alert(`धन्यवाद!\nआपका विज्ञापन (₹${amount} भुगतान विवरण UTR: ${utr} सहित) एडमिन मयंक सिंह जी के पास पहुंच गया है। बैंक से पेमेंट वेरिफाई होते ही यह लाइव कर दिया जाएगा।`);
+document.getElementById("uAdName").value = "";
+document.getElementById("uAdPhone").value = "";
+document.getElementById("uAdUtr").value = "";
+document.getElementById("uAdLink").value = "";
+document.getElementById("uAdVideoUrl").value = "";
+document.getElementById("uAdPhotoFile").value = "";
+document.getElementById("uAdVideoFile").value = "";
+document.getElementById("uAdPhotoPrevBox").classList.add("hidden");
+document.getElementById("uAdVideoPrevBox").classList.add("hidden");
+userAdPhotoBase64 = "";
+userAdVideoBase64 = "";
+switchTab("feed");
+}).catch(err => alert("त्रुटि: " + err.message))
+.finally(() => {
+btn.disabled = false;
+btn.innerText = "विज्ञापन समीक्षा हेतु एडमिन को सबमिट करें";
+});
+}
+
+/* ================= ADMIN AD APPROVAL & MULTI-AD LOGIC ================= */
+function loadAdsForAdmin() {
+db.ref("user_advertisements").on("value", snap => {
+const pendingBox = document.getElementById("pendingAdsListContainer");
+const activeBox = document.getElementById("activeAdsListContainer");
+const countBadge = document.getElementById("pendingAdsCountBadge");
+const earningsBox = document.getElementById("totalAdEarnings");
+
+pendingBox.innerHTML = "";
+activeBox.innerHTML = "";
+
+const ads = snap.val() || {};
+let pendingCount = 0;
+let totalEarned = 0;
+
+Object.entries(ads).forEach(([key, ad]) => {
+if (ad.status === "approved") {
+totalEarned += (ad.amount || 0);
+
+const item = document.createElement("div");
+item.className = "p-3 bg-gray-50 border rounded-xl flex items-center justify-between text-xs";
+item.innerHTML = `
+<div>
+<strong class="text-blue-900">${escapeHTML(ad.client)}</strong> (मो: ${escapeHTML(ad.phone)})
+<span class="text-[10px] text-gray-500 block">प्रकार: ${ad.type === 'video' ? 'वीडियो' : 'बैनर'} • प्राप्त राशि: <strong class="text-emerald-700">₹${ad.amount}</strong></span>
+<span class="text-[9px] text-gray-400">UTR: ${escapeHTML(ad.utr)}</span>
+</div>
+<button class="bg-red-600 hover:bg-red-700 text-white px-2.5 py-1 rounded text-xs font-bold" onclick="removeAdvertisement('${key}')">हटाएं</button>
+`;
+activeBox.appendChild(item);
+} else if (ad.status === "pending") {
+pendingCount++;
+
+let mediaPrev = "";
+if (ad.type === "banner" && ad.photo) {
+mediaPrev = `<img src="${ad.photo}" class="h-28 object-contain rounded my-1 border bg-white">`;
+} else if (ad.type === "video" && ad.videoUrl) {
+mediaPrev = `<div class="max-w-xs my-1">${renderUniversalMediaEmbed(ad.videoUrl)}</div>`;
+}
+
+const item = document.createElement("div");
+item.className = "p-3 bg-amber-50/70 border border-amber-300 rounded-xl space-y-2 text-xs";
+item.innerHTML = `
+<div class="flex justify-between items-center">
+<strong class="text-slate-900 text-sm">${escapeHTML(ad.client)}</strong>
+<span class="bg-emerald-700 text-white px-2 py-0.5 rounded font-black">₹${ad.amount} भेजा गया</span>
+</div>
+<p class="text-[11px] text-slate-700">
+मोबाइल: <strong>${escapeHTML(ad.phone)}</strong> | प्रकार: <strong>${ad.type === 'video' ? 'वीडियो' : 'बैनर'}</strong>
+</p>
+<div class="p-2 bg-white rounded border border-emerald-400 text-slate-900">
+<strong>UPI UTR / Ref No:</strong> <span class="font-mono text-emerald-800 font-black">${escapeHTML(ad.utr)}</span>
+<p class="text-[9px] text-gray-500 mt-0.5">कृपया अपने 8853252811@apl खाते में इस UTR का सत्यापन करें।</p>
+</div>
+${mediaPrev}
+<div class="flex gap-2 pt-1 border-t">
+<button onclick="approveAd('${key}')" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1.5 rounded-lg text-xs">
+✓ पेमेंट प्राप्त हुई - लाइव करें
+</button>
+<button onclick="rejectAd('${key}')" class="bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs">
+अस्वीकार
+</button>
+</div>
+`;
+pendingBox.appendChild(item);
+}
+});
+
+countBadge.innerText = pendingCount;
+earningsBox.innerText = "₹" + totalEarned;
+
+if (pendingCount === 0) {
+pendingBox.innerHTML = "<p class='text-xs text-gray-400'>कोई नया विज्ञापन समीक्षा हेतु लंबित नहीं है।</p>";
+}
+if (activeBox.children.length === 0) {
+activeBox.innerHTML = "<p class='text-xs text-gray-400'>कोई विज्ञापन वर्तमान में लाइव नहीं है।</p>";
+}
+});
+}
+
+function approveAd(key) {
+if (!isAdmin) return;
+db.ref("user_advertisements/" + key).update({ status: "approved" })
+.then(() => alert("विज्ञापन स्वीकृत कर दिया गया है और अब मुख्य स्क्रीन पर लाइव दिखेगा!"))
+.catch(err => alert("त्रुटि: " + err.message));
+}
+
+function rejectAd(key) {
+if (!isAdmin) return;
+if (confirm("क्या आप इस विज्ञापन को अस्वीकार करना चाहते हैं?")) {
+db.ref("user_advertisements/" + key).update({ status: "rejected" });
+}
+}
+
+function removeAdvertisement(key) {
+if (!isAdmin) return;
+if (confirm("क्या आप इस विज्ञापन को हटाना चाहते हैं?")) {
+db.ref("user_advertisements/" + key).remove();
+}
+}
+
+/* MULTIPLE LIVE ADS RENDERER */
+function renderPublicAds() {
+db.ref("user_advertisements").orderByChild("status").equalTo("approved").on("value", snap => {
+const container = document.getElementById("multipleAdsContainer");
+const ads = snap.val();
+
+if (!ads || Object.keys(ads).length === 0) {
+container.classList.add("hidden");
+container.innerHTML = "";
+return;
+}
+
+container.innerHTML = "";
+
+Object.entries(ads).forEach(([key, ad]) => {
+const adCard = document.createElement("div");
+adCard.className = "bg-white p-2.5 rounded-2xl border shadow-sm space-y-1.5";
+
+let mediaHtml = "";
+if (ad.type === "banner" && ad.photo) {
+mediaHtml = `
+<a href="${ad.actionLink || '#'}" target="_blank" class="block overflow-hidden rounded-xl text-center">
+<img src="${ad.photo}" class="w-full h-auto max-h-[600px] object-contain rounded-xl mx-auto block shadow-sm">
+</a>
+`;
+} else if (ad.type === "video" && ad.videoUrl) {
+mediaHtml = `
+<div class="w-full rounded-xl overflow-hidden bg-black text-center">
+${renderUniversalMediaEmbed(ad.videoUrl)}
+</div>
+`;
+}
+
+adCard.innerHTML = `
+<div class="flex justify-between items-center text-[9px] text-gray-400 font-bold uppercase border-b pb-1">
+<span>प्रायोजित विज्ञापन (Sponsored)</span>
+<span class="text-blue-600 font-black">${escapeHTML(ad.client)}</span>
+</div>
+${mediaHtml}
+`;
+container.appendChild(adCard);
+});
+
+container.classList.remove("hidden");
+});
 }
 
 /* NEWS IMAGE SELECTION */
@@ -928,23 +1235,6 @@ document.getElementById("repPhotoPreview").src=b64;
 document.getElementById("repPhotoPreviewBox").classList.remove("hidden");
 });
 });
-
-/* AD BANNER PHOTO SELECTION (ORIGINAL SIZE PRESERVED) */
-document.getElementById("adPhotoFileInput").addEventListener("change",function(e){
-const file=e.target.files[0];
-if(!file)return;
-compressImage(file,1200,1200,0.80,b64=>{
-compressedAdPhoto=b64;
-document.getElementById("adPhotoPreview").src=b64;
-document.getElementById("adPhotoPreviewDiv").classList.remove("hidden");
-});
-});
-
-function toggleAdTypeInputs() {
-const type = document.getElementById("adTypeSelect").value;
-document.getElementById("adPhotoInputDiv").classList.toggle("hidden", type !== "banner");
-document.getElementById("adVideoInputDiv").classList.toggle("hidden", type !== "video");
-}
 
 /* OTP LOGIN LOGIC */
 function initRecaptcha(){
@@ -1323,136 +1613,6 @@ db.ref("news_articles/" + key).remove()
 }
 }
 
-/* ================= AD MANAGEMENT FUNCTIONS ================= */
-function saveNewAdvertisement() {
-if (!isAdmin) return;
-const client = document.getElementById("adClientName").value.trim();
-const type = document.getElementById("adTypeSelect").value;
-const videoUrl = document.getElementById("adVideoUrlInput").value.trim();
-const finalAdVideo = galleryAdVideoBase64 || videoUrl;
-const actionLink = document.getElementById("adActionLink").value.trim();
-
-if (!client) {
-return alert("कृपया विज्ञापनदाता का नाम भरें।");
-}
-
-if (type === "banner" && !compressedAdPhoto) {
-return alert("कृपया विज्ञापन बैनर फोटो चुनें।");
-}
-
-if (type === "video" && !finalAdVideo) {
-return alert("कृपया गैलरी से विज्ञापन वीडियो चुनें या वीडियो लिंक भरें।");
-}
-
-const adData = {
-client: client,
-type: type,
-photo: compressedAdPhoto || "",
-videoUrl: finalAdVideo || "",
-actionLink: actionLink || "",
-active: true,
-timestamp: Date.now()
-};
-
-db.ref("sponsored_advertisements").push(adData).then(() => {
-alert("विज्ञापन सफलतापूर्वक लाइव पब्लिश हो गया!");
-document.getElementById("adClientName").value = "";
-document.getElementById("adVideoUrlInput").value = "";
-document.getElementById("adActionLink").value = "";
-document.getElementById("adPhotoFileInput").value = "";
-document.getElementById("adPhotoPreviewDiv").classList.add("hidden");
-compressedAdPhoto = "";
-removeAdVideoFile();
-loadAdsForAdmin();
-}).catch(err => alert("त्रुटि: " + err.message));
-}
-
-function loadAdsForAdmin() {
-db.ref("sponsored_advertisements").on("value", snap => {
-const box = document.getElementById("activeAdsListContainer");
-box.innerHTML = "";
-const ads = snap.val();
-
-if (!ads) {
-box.innerHTML = "<p class='text-xs text-gray-400'>कोई विज्ञापन सक्रिय नहीं है।</p>";
-return;
-}
-
-Object.entries(ads).forEach(([key, ad]) => {
-const item = document.createElement("div");
-item.className = "p-2.5 bg-gray-50 border rounded-lg flex items-center justify-between text-xs";
-item.innerHTML = `
-<div>
-<strong class="text-blue-900">${escapeHTML(ad.client)}</strong>
-<span class="text-[10px] text-gray-500 block">प्रकार: ${ad.type === 'video' ? 'वीडियो विज्ञापन' : 'बैनर विज्ञापन'}</span>
-</div>
-<button class="bg-red-600 text-white px-2.5 py-1 rounded text-xs font-bold" onclick="deleteAdvertisement('${key}')">हटाएं</button>
-`;
-box.appendChild(item);
-});
-});
-}
-
-function deleteAdvertisement(key) {
-if (!isAdmin) return;
-if (confirm("क्या आप इस विज्ञापन को हटाना चाहते हैं?")) {
-db.ref("sponsored_advertisements/" + key).remove();
-}
-}
-
-/* PUBLIC AD RENDERER - RENDERS IN NATURAL UNCONSTRAINED SIZE */
-function renderPublicAds() {
-db.ref("sponsored_advertisements").on("value", snap => {
-const topBanner = document.getElementById("topAdBannerContainer");
-const ads = snap.val();
-
-if (!ads) {
-topBanner.classList.add("hidden");
-topBanner.innerHTML = "";
-return;
-}
-
-const activeAds = Object.values(ads);
-if (activeAds.length > 0) {
-const ad = activeAds[0];
-let adHtml = "";
-
-if (ad.type === "banner" && ad.photo) {
-adHtml = `
-<div class="bg-white p-2.5 rounded-2xl border shadow-sm space-y-1.5">
-<div class="flex justify-between items-center text-[9px] text-gray-400 font-bold uppercase border-b pb-1">
-<span>प्रायोजित विज्ञापन (Sponsored)</span>
-<span class="text-blue-600 font-black">${escapeHTML(ad.client)}</span>
-</div>
-<a href="${ad.actionLink || '#'}" target="_blank" class="block overflow-hidden rounded-xl text-center">
-<!-- Original Image Display: No crop, No forced height -->
-<img src="${ad.photo}" class="w-full h-auto max-h-[600px] object-contain rounded-xl mx-auto block shadow-sm">
-</a>
-</div>
-`;
-} else if (ad.type === "video" && ad.videoUrl) {
-adHtml = `
-<div class="bg-white p-2.5 rounded-2xl border shadow-sm space-y-1.5">
-<div class="flex justify-between items-center text-[9px] text-gray-400 font-bold uppercase border-b pb-1">
-<span>प्रायोजित वीडियो विज्ञापन</span>
-<span class="text-blue-600 font-black">${escapeHTML(ad.client)}</span>
-</div>
-<!-- Original Video Display: Adapts cleanly without clipping -->
-<div class="w-full rounded-xl overflow-hidden bg-black text-center">
-${renderUniversalMediaEmbed(ad.videoUrl)}
-</div>
-</div>
-`;
-}
-
-topBanner.innerHTML = adHtml;
-topBanner.classList.remove("hidden");
-} else {
-topBanner.classList.add("hidden");
-}
-});
-}
-
 /* NEWS FEED & LIVE SLOW TICKER RENDER */
 function loadNewsFeed(){
 renderPublicAds();
@@ -1480,10 +1640,8 @@ Object.entries(articles)
 .sort((a,b)=>(b[1].timestamp||0)-(a[1].timestamp||0))
 .forEach(([key,item])=>{
 
-// Headline for live slow ticker
 tickerHeadlines.push(`${item.location}: ${item.title}`);
 
-// Render Shorts Bar
 if (item.videoUrl && item.isShorts) {
 shortsFound = true;
 const shortItem = document.createElement("div");
@@ -1500,7 +1658,6 @@ shortItem.innerHTML = `
 shortsBar.appendChild(shortItem);
 }
 
-// Render Main Feed Card
 const card=document.createElement("div");
 card.className="bg-white p-4 rounded-xl border shadow-sm space-y-3 relative";
 
@@ -1519,7 +1676,6 @@ const reporter=escapeHTML(item.reporterName);
 const address=escapeHTML(item.location);
 const category=escapeHTML(item.category);
 
-// Admin Quick Edit & Delete Controls
 let adminControlButtons = "";
 if (isAdmin) {
 adminControlButtons = `
@@ -1593,7 +1749,6 @@ card.querySelector(".btnDelete").onclick = () => deleteArticleByAdmin(key);
 list.appendChild(card);
 });
 
-// Update slow ticker text
 if (tickerHeadlines.length > 0) {
 tickerText.innerText = tickerHeadlines.join(" ••• ") + " ••• आवाज़ बुंदेलखंड न्यूज़ नेटवर्क";
 }
@@ -1670,7 +1825,7 @@ function switchTab(tab){
 if((tab==="admin" || tab==="manageAds" || tab==="manageReporters") && !isAdmin)return;
 if((tab==="reporter" || tab==="shortsPost" || tab==="wallet") && !currentUser)return;
 
-["feed","reporter","shortsPost","wallet","admin","manageAds","manageReporters"].forEach(t=>{
+["feed","userAdSection","reporter","shortsPost","wallet","admin","manageAds","manageReporters"].forEach(t=>{
 const section=document.getElementById(t+"Section");
 if(section)section.classList.add("hidden");
 const button=document.getElementById("tab"+t.charAt(0).toUpperCase()+t.slice(1));
