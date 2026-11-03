@@ -242,7 +242,7 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
   <span class="bg-white text-slate-900 text-[10px] font-black px-2.5 py-1 rounded-full shadow-sm shrink-0">बुक करें</span>
 </div>
 
-<!-- ================= SPECIAL ADMIN AUTO-PLAY VIDEO AD ================= -->
+<!-- SPECIAL ADMIN AUTO-PLAY VIDEO AD -->
 <div id="adminHouseAdCard" class="hidden bg-gradient-to-br from-[#001D4A] via-[#002D62] to-[#8B0000] p-3 rounded-3xl border-2 border-amber-400 shadow-xl space-y-2 text-white">
   <div class="flex justify-between items-center border-b border-white/20 pb-1.5">
     <div class="flex items-center gap-2">
@@ -642,17 +642,51 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 </div>
 </div>
 
-<!-- FULLSCREEN 50s SHORTS MODAL -->
+<!-- ================= FULLSCREEN 50s SHORTS MODAL (DAINIK BHASKAR STYLE) ================= -->
 <div id="shortsModal" class="fixed inset-0 z-[9999999] bg-black hidden flex flex-col justify-between">
+<!-- Top Bar -->
 <div class="p-3 flex items-center justify-between text-white z-20 bg-gradient-to-b from-black/80 to-transparent">
 <span class="text-xs font-bold text-amber-400 flex items-center gap-1.5">
 <i class="fa-solid fa-bolt text-red-500"></i> AB शॉर्ट्स (अधिकतम 50 सेकंड)
 </span>
 <button onclick="closeShortsModal()" class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white text-sm">✕</button>
 </div>
-<div class="relative flex-1 flex items-center justify-center bg-black overflow-hidden" id="shortsPlayerContainer"></div>
+
+<!-- Video Container With Watermark Canvas -->
+<div class="relative flex-1 flex items-center justify-center bg-black overflow-hidden" id="shortsPlayerContainer">
+  <!-- Dynamic Video will inject here -->
+</div>
+
+<!-- Right Floating Action Buttons (Dainik Bhaskar Style) -->
+<div class="absolute right-3 bottom-24 flex flex-col items-center gap-4 z-30">
+  <!-- Like Button -->
+  <button id="btnShortLike" onclick="toggleShortLike()" class="flex flex-col items-center text-white active:scale-90 transition">
+    <div class="w-11 h-11 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-lg border border-white/20 shadow-lg">
+      <i id="shortLikeIcon" class="fa-solid fa-heart text-white"></i>
+    </div>
+    <span id="shortLikeCount" class="text-[10px] font-bold mt-1 text-white drop-shadow">12</span>
+  </button>
+
+  <!-- WhatsApp Share Button -->
+  <button onclick="shareShortWhatsApp()" class="flex flex-col items-center text-white active:scale-90 transition">
+    <div class="w-11 h-11 rounded-full bg-emerald-600/80 backdrop-blur-md flex items-center justify-center text-lg border border-white/20 shadow-lg">
+      <i class="fa-brands fa-whatsapp text-white"></i>
+    </div>
+    <span class="text-[10px] font-bold mt-1 text-white drop-shadow">शेयर</span>
+  </button>
+
+  <!-- Download With Watermark Button -->
+  <button id="btnShortDownload" onclick="downloadShortWithWatermark()" class="flex flex-col items-center text-white active:scale-90 transition">
+    <div class="w-11 h-11 rounded-full bg-blue-600/80 backdrop-blur-md flex items-center justify-center text-lg border border-white/20 shadow-lg">
+      <i id="downloadIcon" class="fa-solid fa-download text-white"></i>
+    </div>
+    <span id="downloadText" class="text-[10px] font-bold mt-1 text-white drop-shadow">डाउनलोड</span>
+  </button>
+</div>
+
+<!-- Bottom Info Overlay -->
 <div class="p-4 z-20 text-white bg-gradient-to-t from-black/90 to-transparent space-y-1">
-<h4 id="shortsTitleText" class="text-sm font-bold text-white leading-snug"></h4>
+<h4 id="shortsTitleText" class="text-sm font-bold text-white leading-snug pr-14"></h4>
 <p class="text-[10px] text-amber-300 font-semibold">आवाज़ बुंदेलखंड न्यूज़ | ग्राउंड बुलेटिन</p>
 </div>
 </div>
@@ -768,6 +802,10 @@ let galleryShortVideoBase64 = "";
 let adminSpecialVideoBase64 = "";
 
 let audioEnabledByUser = false;
+let activeShortVideoUrl = "";
+let activeShortTitle = "";
+let isShortLiked = false;
+let currentLikesCount = 12;
 
 let myProfile = {
 name:"संवाददाता",
@@ -941,33 +979,170 @@ return `<div class="w-full rounded-xl overflow-hidden my-2 bg-black shadow text-
 </div>`;
 }
 
-/* 50s SHORTS VIEWER */
+/* ================= 50s SHORTS VIEWER (DAINIK BHASKAR STYLE) ================= */
 function openShortsModal(title, url) {
+activeShortTitle = title;
+activeShortVideoUrl = url;
+isShortLiked = false;
+currentLikesCount = Math.floor(Math.random() * 50) + 10;
+
 document.getElementById("shortsTitleText").innerText = title;
+document.getElementById("shortLikeCount").innerText = currentLikesCount;
+document.getElementById("shortLikeIcon").className = "fa-solid fa-heart text-white";
+
 const container = document.getElementById("shortsPlayerContainer");
 const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/))([^?&/]+)/);
+
 if (ytMatch) {
-container.innerHTML = `<iframe class="w-full h-full" src="https://www.youtube.com/embed/${encodeURIComponent(ytMatch[1])}?autoplay=1&loop=1&playlist=${encodeURIComponent(ytMatch[1])}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+  container.innerHTML = `<iframe class="w-full h-full" src="https://www.youtube.com/embed/${encodeURIComponent(ytMatch[1])}?autoplay=1&loop=1&playlist=${encodeURIComponent(ytMatch[1])}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
 } else if (url.includes('facebook.com')) {
-container.innerHTML = `<iframe src="https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(url)}&autoplay=true" class="w-full h-full" frameborder="0" allow="autoplay"></iframe>`;
+  container.innerHTML = `<iframe src="https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(url)}&autoplay=true" class="w-full h-full" frameborder="0" allow="autoplay"></iframe>`;
 } else {
-container.innerHTML = `<video id="shortsActiveVideo" class="w-full max-h-full object-contain" loop playsinline autoplay controls src="${url}"></video>`;
-const vid = document.getElementById("shortsActiveVideo");
-if (vid) {
-vid.ontimeupdate = function() {
-if (vid.currentTime >= 50) {
-vid.currentTime = 0;
-vid.play();
-}
-};
-}
+  // Direct MP4 / WebM / Base64 Player
+  container.innerHTML = `
+    <div class="relative w-full h-full flex items-center justify-center">
+      <video id="shortsActiveVideo" class="w-full max-h-full object-contain" loop playsinline autoplay controls src="${url}"></video>
+      <!-- In-App Floating Visual Watermark -->
+      <div class="absolute top-14 left-3 bg-red-700/85 text-white px-2.5 py-1 rounded-lg text-[9px] font-black flex items-center gap-1.5 shadow-lg border border-amber-400/60 pointer-events-none">
+        <i class="fa-solid fa-bolt text-amber-300"></i> आवाज़ बुंदेलखंड न्यूज़
+      </div>
+    </div>`;
+
+  const vid = document.getElementById("shortsActiveVideo");
+  if (vid) {
+    vid.ontimeupdate = function() {
+      if (vid.currentTime >= 50) {
+        vid.currentTime = 0;
+        vid.play();
+      }
+    };
+  }
 }
 document.getElementById("shortsModal").classList.remove("hidden");
 }
 
 function closeShortsModal() {
-document.getElementById("shortsPlayerContainer").innerHTML = "";
+const container = document.getElementById("shortsPlayerContainer");
+const vid = document.getElementById("shortsActiveVideo");
+if (vid) vid.pause();
+container.innerHTML = "";
 document.getElementById("shortsModal").classList.add("hidden");
+}
+
+/* SHORTS LIKE TOGGLE */
+function toggleShortLike() {
+const icon = document.getElementById("shortLikeIcon");
+const count = document.getElementById("shortLikeCount");
+isShortLiked = !isShortLiked;
+if (isShortLiked) {
+  icon.className = "fa-solid fa-heart text-red-500 animate-bounce";
+  currentLikesCount++;
+} else {
+  icon.className = "fa-solid fa-heart text-white";
+  currentLikesCount--;
+}
+count.innerText = currentLikesCount;
+}
+
+/* SHORTS WHATSAPP SHARE */
+function shareShortWhatsApp() {
+const text = `*आवाज़ बुंदेलखंड न्यूज़ - शॉर्ट बुलेटिन*\n\n📹 ${activeShortTitle}\n\nताज़ा खबरें और लाइव वीडियो देखने के लिए ऐप खोलें:\n${location.href.split("#")[0]}`;
+window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, "_blank");
+}
+
+/* AUTOMATIC VIDEO DOWNLOAD WITH CANVAS WATERMARK */
+function downloadShortWithWatermark() {
+const btnIcon = document.getElementById("downloadIcon");
+const btnText = document.getElementById("downloadText");
+
+if (activeShortVideoUrl.includes("youtube.com") || activeShortVideoUrl.includes("youtu.be") || activeShortVideoUrl.includes("facebook.com")) {
+  alert("नोट: यह YouTube/Facebook वीडियो लिंक है। डायरेक्ट MP4 वीडियो गैलरी में वॉटरमार्क सहित डाउनलोड होते हैं।\n\nशेयर बटन से आप इसे सीधे WhatsApp पर भेज सकते हैं!");
+  return;
+}
+
+btnIcon.className = "fa-solid fa-spinner animate-spin text-amber-300";
+btnText.innerText = "प्रोसेसिंग...";
+
+const video = document.getElementById("shortsActiveVideo");
+if (!video) {
+  btnIcon.className = "fa-solid fa-download text-white";
+  btnText.innerText = "डाउनलोड";
+  return;
+}
+
+try {
+  // Canvas Watermark Engine
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+
+  canvas.width = video.videoWidth || 720;
+  canvas.height = video.videoHeight || 1280;
+
+  const stream = canvas.captureStream(30);
+  let recordedChunks = [];
+  const mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+
+  mediaRecorder.ondataavailable = function(e) {
+    if (e.data.size > 0) recordedChunks.push(e.data);
+  };
+
+  mediaRecorder.onstop = function() {
+    const blob = new Blob(recordedChunks, { type: 'video/mp4' });
+    const dlUrl = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = dlUrl;
+    a.download = `Awaj_Bundelkhand_News_${Date.now()}.mp4`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    btnIcon.className = "fa-solid fa-circle-check text-emerald-400";
+    btnText.innerText = "सेव हुआ!";
+    setTimeout(() => {
+      btnIcon.className = "fa-solid fa-download text-white";
+      btnText.innerText = "डाउनलोड";
+    }, 2500);
+  };
+
+  mediaRecorder.start();
+  const originalTime = video.currentTime;
+  video.currentTime = 0;
+  video.play();
+
+  function drawFrame() {
+    if (video.paused || video.ended || video.currentTime >= 10) {
+      mediaRecorder.stop();
+      video.currentTime = originalTime;
+      video.play();
+      return;
+    }
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    // Bottom Watermark Ribbon
+    ctx.fillStyle = "rgba(185, 28, 28, 0.85)";
+    ctx.fillRect(20, canvas.height - 80, 420, 50);
+
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 22px Mukta, sans-serif";
+    ctx.fillText("आवाज़ बुंदेलखंड न्यूज़", 40, canvas.height - 47);
+
+    requestAnimationFrame(drawFrame);
+  }
+  drawFrame();
+
+} catch(err) {
+  // Direct Fallback Download
+  const a = document.createElement("a");
+  a.href = activeShortVideoUrl;
+  a.download = `Awaj_Bundelkhand_${Date.now()}.mp4`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+
+  btnIcon.className = "fa-solid fa-download text-white";
+  btnText.innerText = "डाउनलोड";
+  alert("वीडियो आपके डिवाइस में डाउनलोड हो रहा है!");
+}
 }
 
 /* COMPRESSION HELPERS */
@@ -1794,7 +1969,7 @@ function shareArticle() {
   }
 }
 
-/* NEWS FEED & TICKER (WITH SAFE ERROR HANDLING) */
+/* NEWS FEED & TICKER */
 function loadNewsFeed(){
   renderPublicAds();
 
