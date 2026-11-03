@@ -170,7 +170,7 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 <input id="uAdLink" class="w-full mt-1 border rounded-lg px-3 py-2 text-xs outline-none" placeholder="उदा. tel:8853252811 या WhatsApp लिंक">
 </div>
 
-<!-- ================= OFFICIAL AUTO-GENERATED LIVE QR CODE SECTION ================= -->
+<!-- OFFICIAL AUTO-GENERATED LIVE QR CODE SECTION -->
 <div class="bg-gradient-to-r from-emerald-950 via-teal-900 to-slate-900 text-white p-4 rounded-2xl shadow-md space-y-3 border border-emerald-500">
   <div class="flex justify-between items-center border-b border-emerald-700 pb-2">
     <div>
@@ -240,6 +240,44 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
     </div>
   </div>
   <span class="bg-white text-slate-900 text-[10px] font-black px-2.5 py-1 rounded-full shadow-sm shrink-0">बुक करें</span>
+</div>
+
+<!-- ================= SPECIAL OFFICIAL APP HOUSE AD (AUTOMATIC VIDEO & PHOTO LOOP) ================= -->
+<div class="bg-gradient-to-br from-[#001D4A] via-[#002D62] to-[#8B0000] p-3 rounded-3xl border-2 border-amber-400 shadow-xl space-y-2 text-white">
+  <div class="flex justify-between items-center border-b border-white/20 pb-1.5">
+    <div class="flex items-center gap-2">
+      <!-- 3D Official Logo Badge -->
+      <div class="w-8 h-8 rounded-lg border border-amber-400 bg-white p-0.5 flex flex-col items-center justify-center shadow">
+        <span class="text-[7px] font-black text-red-700 leading-none">आवाज</span>
+        <span class="text-[6px] font-black text-blue-900 leading-none">NEWS</span>
+      </div>
+      <div>
+        <h4 class="text-xs font-black tracking-wide text-amber-300">आवाज़ बुंदेलखंड न्यूज़ • आधिकारिक ऐप</h4>
+        <span class="text-[9px] text-slate-200">बुंदेलखंड का नंबर-1 डिजिटल मीडिया नेटवर्क</span>
+      </div>
+    </div>
+    <span class="bg-red-600 text-white text-[9px] font-black px-2 py-0.5 rounded-full animate-pulse flex items-center gap-1">
+      <span class="w-1.5 h-1.5 rounded-full bg-white"></span> स्पेशल
+    </span>
+  </div>
+
+  <!-- Auto-Playing Video Loop (No Click Needed) -->
+  <div class="w-full rounded-2xl overflow-hidden bg-black shadow-inner border border-white/10 relative">
+    <video autoplay loop muted playsinline class="w-full h-auto max-h-[380px] object-contain mx-auto">
+      <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+      आपका ब्राउज़र वीडियो समर्थित नहीं करता।
+    </video>
+    <div class="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm px-2 py-0.5 rounded text-[9px] text-amber-300 font-bold">
+      <i class="fa-solid fa-rotate animate-spin text-[8px] mr-1"></i> ऑटो प्ले
+    </div>
+  </div>
+
+  <div class="flex items-center justify-between pt-1">
+    <p class="text-[10px] text-slate-200">ताज़ा खबरों और ग्राउंड रिपोर्ट के लिए ऐप शेयर करें:</p>
+    <button onclick="shareArticle()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-black px-3 py-1 rounded-xl text-xs flex items-center gap-1 shadow">
+      <i class="fa-brands fa-whatsapp text-sm"></i> ऐप शेयर करें
+    </button>
+  </div>
 </div>
 
 <!-- 50 SECONDS SHORTS / REELS BAR -->
@@ -422,7 +460,6 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 </div>
 </div>
 
-<!-- 1. PENDING USER ADS (WITH PAYMENT SCREENSHOT) -->
 <div class="space-y-2">
 <h4 class="text-xs font-bold text-slate-900 flex items-center justify-between">
 <span>यूज़र द्वारा भेजे गए लंबित विज्ञापन (पेमेंट स्क्रीनशॉट चेक करें)</span>
@@ -433,7 +470,6 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 </div>
 </div>
 
-<!-- 2. ACTIVE LIVE ADS (WITH EDIT & DELETE) -->
 <div class="pt-4 border-t space-y-2">
 <h4 class="text-xs font-bold text-slate-900">वर्तमान सक्रिय विज्ञापन (लाइव स्क्रीन पर चल रहे हैं)</h4>
 <div id="activeAdsListContainer" class="space-y-3">
@@ -478,7 +514,7 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 
 </main>
 
-<!-- ================= EDIT AD MODAL (ADMIN ONLY) ================= -->
+<!-- EDIT AD MODAL (ADMIN ONLY) -->
 <div id="editAdModal" class="fixed inset-0 bg-black/80 z-[1000000] flex items-center justify-center p-4 hidden">
 <div class="bg-white rounded-2xl p-5 max-w-sm w-full space-y-3">
 <div class="flex justify-between items-center border-b pb-2">
@@ -955,7 +991,7 @@ btn.innerText = "विज्ञापन और स्क्रीनशॉट 
 });
 }
 
-/* ================= ADMIN AD APPROVAL, EDIT & DELETE ================= */
+/* ADMIN AD APPROVAL, EDIT & DELETE */
 function loadAdsForAdmin() {
 db.ref("user_advertisements").on("value", snap => {
 const pendingBox = document.getElementById("pendingAdsListContainer");
@@ -1558,6 +1594,19 @@ db.ref("news_articles/" + key).remove()
 .then(() => alert("खबर हटा दी गई है।"))
 .catch(err => alert("त्रुटि: " + err.message));
 }
+}
+
+/* SHARE FUNCTION */
+function shareArticle() {
+  const title = "आवाज़ बुंदेलखंड न्यूज़ ऐप";
+  const url = location.href.split("#")[0];
+  const shareText = `*आवाज़ बुंदेलखंड न्यूज़*\n\nबुंदेलखंड की निष्पक्ष और सटीक खबरें देखने के लिए ऐप डाउनलोड करें:\n${url}`;
+
+  if (navigator.share) {
+    navigator.share({ title: title, text: shareText, url: url }).catch(err => console.log(err));
+  } else {
+    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`, "_blank");
+  }
 }
 
 /* NEWS FEED & TICKER */
