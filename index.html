@@ -29,7 +29,7 @@ box-shadow:none;
 </style>
 </head>
 
-<body class="bg-gray-100 font-sans min-h-screen flex flex-col">
+<body class="bg-gray-100 font-sans min-h-screen flex flex-col" onclick="enableAudioOnFirstTouch()">
 
 <!-- HEADER WITH OFFICIAL LOGO -->
 <header class="bg-red-700 text-white shadow-md sticky top-0 z-50">
@@ -242,41 +242,42 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
   <span class="bg-white text-slate-900 text-[10px] font-black px-2.5 py-1 rounded-full shadow-sm shrink-0">बुक करें</span>
 </div>
 
-<!-- ================= SPECIAL OFFICIAL APP HOUSE AD (AUTOMATIC VIDEO & PHOTO LOOP) ================= -->
-<div class="bg-gradient-to-br from-[#001D4A] via-[#002D62] to-[#8B0000] p-3 rounded-3xl border-2 border-amber-400 shadow-xl space-y-2 text-white">
+<!-- ================= SPECIAL ADMIN AUTO-PLAY VIDEO AD (WITH SOUND) ================= -->
+<div id="adminHouseAdCard" class="bg-gradient-to-br from-[#001D4A] via-[#002D62] to-[#8B0000] p-3 rounded-3xl border-2 border-amber-400 shadow-xl space-y-2 text-white">
   <div class="flex justify-between items-center border-b border-white/20 pb-1.5">
     <div class="flex items-center gap-2">
-      <!-- 3D Official Logo Badge -->
       <div class="w-8 h-8 rounded-lg border border-amber-400 bg-white p-0.5 flex flex-col items-center justify-center shadow">
         <span class="text-[7px] font-black text-red-700 leading-none">आवाज</span>
         <span class="text-[6px] font-black text-blue-900 leading-none">NEWS</span>
       </div>
       <div>
-        <h4 class="text-xs font-black tracking-wide text-amber-300">आवाज़ बुंदेलखंड न्यूज़ • आधिकारिक ऐप</h4>
-        <span class="text-[9px] text-slate-200">बुंदेलखंड का नंबर-1 डिजिटल मीडिया नेटवर्क</span>
+        <h4 id="adminAdTitleShow" class="text-xs font-black tracking-wide text-amber-300">आवाज़ बुंदेलखंड न्यूज़ • स्पेशल विज्ञापन</h4>
+        <span id="adminAdSubtitleShow" class="text-[9px] text-slate-200">प्रधान संपादक मयंक सिंह द्वारा विशेष रूप से प्रस्तुत</span>
       </div>
     </div>
     <span class="bg-red-600 text-white text-[9px] font-black px-2 py-0.5 rounded-full animate-pulse flex items-center gap-1">
-      <span class="w-1.5 h-1.5 rounded-full bg-white"></span> स्पेशल
+      <span class="w-1.5 h-1.5 rounded-full bg-white"></span> लाइव Ad
     </span>
   </div>
 
-  <!-- Auto-Playing Video Loop (No Click Needed) -->
+  <!-- Video Player With Auto-Play & Sound Trigger -->
   <div class="w-full rounded-2xl overflow-hidden bg-black shadow-inner border border-white/10 relative">
-    <video autoplay loop muted playsinline class="w-full h-auto max-h-[380px] object-contain mx-auto">
-      <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+    <video id="adminAutoplayVideo" autoplay loop playsinline controls class="w-full h-auto max-h-[380px] object-contain mx-auto">
+      <source id="adminVideoSource" src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
       आपका ब्राउज़र वीडियो समर्थित नहीं करता।
     </video>
-    <div class="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm px-2 py-0.5 rounded text-[9px] text-amber-300 font-bold">
-      <i class="fa-solid fa-rotate animate-spin text-[8px] mr-1"></i> ऑटो प्ले
-    </div>
+    
+    <!-- Sound Status / Quick Unmute Button -->
+    <button type="button" id="soundToggleBtn" onclick="toggleAdSound()" class="absolute top-2 right-2 bg-black/75 hover:bg-black text-amber-300 font-bold px-2.5 py-1 rounded-full text-[10px] flex items-center gap-1 shadow-md border border-amber-400/50 backdrop-blur-sm z-20">
+      <i id="soundIcon" class="fa-solid fa-volume-xmark text-red-400"></i> <span id="soundText">आवाज़ चालू करें</span>
+    </button>
   </div>
 
   <div class="flex items-center justify-between pt-1">
-    <p class="text-[10px] text-slate-200">ताज़ा खबरों और ग्राउंड रिपोर्ट के लिए ऐप शेयर करें:</p>
-    <button onclick="shareArticle()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-black px-3 py-1 rounded-xl text-xs flex items-center gap-1 shadow">
-      <i class="fa-brands fa-whatsapp text-sm"></i> ऐप शेयर करें
-    </button>
+    <p class="text-[10px] text-slate-200" id="adminAdNoteText">आवाज़ बुंदेलखंड न्यूज़ को सीधे अपने दोस्तों को शेयर करें:</p>
+    <a id="adminAdActionBtn" href="javascript:shareArticle()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-black px-3 py-1 rounded-xl text-xs flex items-center gap-1 shadow">
+      <i class="fa-brands fa-whatsapp text-sm"></i> संपर्क / शेयर
+    </a>
   </div>
 </div>
 
@@ -444,7 +445,7 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 </div>
 </section>
 
-<!-- ================= MANAGE ADS & REVENUE (ADMIN WITH EDIT & DELETE) ================= -->
+<!-- ================= MANAGE ADS & REVENUE (ADMIN WITH EDIT & DELETE & OWN AD SETUP) ================= -->
 <section id="manageAdsSection" class="hidden bg-white p-5 rounded-2xl border space-y-5">
 <div class="border-b pb-2 flex justify-between items-center">
 <div>
@@ -460,6 +461,54 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 </div>
 </div>
 
+<!-- ================= ADMIN'S OWN AD SETUP CONTROLS ================= -->
+<div class="bg-gradient-to-r from-amber-50 to-red-50 border-2 border-amber-400 p-4 rounded-2xl space-y-3">
+<div class="flex items-center justify-between border-b border-amber-300 pb-1.5">
+  <h4 class="text-xs font-black text-slate-900 flex items-center gap-1.5">
+    <i class="fa-solid fa-crown text-amber-600"></i> एडमिन स्पेशल वीडियो Ad (ऑटो-प्ले + आवाज़)
+  </h4>
+  <span class="text-[9px] bg-red-600 text-white font-bold px-2 py-0.5 rounded">ऐप का अपना Ad</span>
+</div>
+<p class="text-[10px] text-slate-600">
+यहाँ आप अपना कोई भी वीडियो Ad लगा सकते हैं, जो यूज़र के स्क्रीन पर आते ही पूरी आवाज़ के साथ अपने-आप चलेगा।
+</p>
+
+<div>
+  <label class="text-[11px] font-bold text-slate-700">Ad का शीर्षक (Heading)</label>
+  <input id="adminAdTitleInput" class="w-full mt-0.5 border rounded-lg p-2 text-xs font-bold" placeholder="उदा. आवाज़ बुंदेलखंड न्यूज़ • निष्पक्ष डिजिटल मीडिया">
+</div>
+
+<div>
+  <label class="text-[11px] font-bold text-slate-700">Ad का उप-शीर्षक (Sub-heading)</label>
+  <input id="adminAdSubInput" class="w-full mt-0.5 border rounded-lg p-2 text-xs" placeholder="उदा. विज्ञापन देने व रिपोर्टर बनने के लिए संपर्क करें">
+</div>
+
+<div class="space-y-1">
+  <label class="text-[11px] font-bold text-slate-700 block">1. गैलरी से अपना वीडियो Ad चुनें (MP4):</label>
+  <input type="file" id="adminAdVideoFileInput" accept="video/*" class="w-full text-xs border p-1 rounded bg-white">
+  <div id="adminAdVideoPreviewBox" class="hidden mt-2 text-center">
+    <video id="adminAdVideoLocalPrev" controls class="max-h-40 mx-auto rounded border bg-black"></video>
+  </div>
+</div>
+
+<div class="text-center text-[10px] font-bold text-gray-400">-- अथवा लिंक डालें --</div>
+
+<div>
+  <label class="text-[11px] font-bold text-slate-700">2. वीडियो का डायरेक्ट वेब लिंक (MP4 / Web Video):</label>
+  <input type="url" id="adminAdVideoUrlInput" class="w-full mt-0.5 border rounded-lg p-2 text-xs" placeholder="https://.../video.mp4">
+</div>
+
+<div>
+  <label class="text-[11px] font-bold text-slate-700">कॉल / WhatsApp एक्शन लिंक (वैकल्पिक):</label>
+  <input id="adminAdActionLinkInput" class="w-full mt-0.5 border rounded-lg p-2 text-xs" placeholder="उदा. tel:8853252811 या WhatsApp लिंक">
+</div>
+
+<button type="button" onclick="saveAdminSpecialAd()" class="w-full bg-[#001D4A] hover:bg-slate-900 text-amber-300 font-black py-2.5 rounded-xl text-xs shadow flex items-center justify-center gap-1.5 transition">
+  <i class="fa-solid fa-floppy-disk"></i> एडमिन स्पेशल Ad को लाइव सेव करें
+</button>
+</div>
+
+<!-- 1. PENDING USER ADS (WITH PAYMENT SCREENSHOT) -->
 <div class="space-y-2">
 <h4 class="text-xs font-bold text-slate-900 flex items-center justify-between">
 <span>यूज़र द्वारा भेजे गए लंबित विज्ञापन (पेमेंट स्क्रीनशॉट चेक करें)</span>
@@ -470,9 +519,10 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 </div>
 </div>
 
+<!-- 2. ACTIVE LIVE ADS (WITH EDIT & DELETE) -->
 <div class="pt-4 border-t space-y-2">
 <h4 class="text-xs font-bold text-slate-900">वर्तमान सक्रिय विज्ञापन (लाइव स्क्रीन पर चल रहे हैं)</h4>
-<div id="activeAdsListContainer" class="space-y-3">
+<div id="activeAdsListContainer" class="space-y-2">
 <p class="text-xs text-gray-400">कोई विज्ञापन सक्रिय नहीं है।</p>
 </div>
 </div>
@@ -514,7 +564,7 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 
 </main>
 
-<!-- EDIT AD MODAL (ADMIN ONLY) -->
+<!-- ================= EDIT AD MODAL (ADMIN ONLY) ================= -->
 <div id="editAdModal" class="fixed inset-0 bg-black/80 z-[1000000] flex items-center justify-center p-4 hidden">
 <div class="bg-white rounded-2xl p-5 max-w-sm w-full space-y-3">
 <div class="flex justify-between items-center border-b pb-2">
@@ -712,6 +762,9 @@ let userAdVideoBase64 = "";
 let userAdReceiptBase64 = "";
 let galleryNewsVideoBase64 = "";
 let galleryShortVideoBase64 = "";
+let adminSpecialVideoBase64 = "";
+
+let audioEnabledByUser = false;
 
 let myProfile = {
 name:"संवाददाता",
@@ -736,6 +789,104 @@ if(el) el.innerText=new Date().toLocaleTimeString("hi-IN");
 
 function logoutDirect(){
 auth.signOut().then(()=>location.reload());
+}
+
+/* SMART AUDIO UNMUTE ON FIRST USER TOUCH */
+function enableAudioOnFirstTouch() {
+  if (audioEnabledByUser) return;
+  const vid = document.getElementById("adminAutoplayVideo");
+  if (vid) {
+    vid.muted = false;
+    vid.play().then(() => {
+      audioEnabledByUser = true;
+      updateSoundButtonUI(true);
+    }).catch(e => {
+      // Background retry
+    });
+  }
+}
+
+function toggleAdSound() {
+  const vid = document.getElementById("adminAutoplayVideo");
+  if (!vid) return;
+  vid.muted = !vid.muted;
+  if (!vid.muted) vid.play();
+  audioEnabledByUser = !vid.muted;
+  updateSoundButtonUI(!vid.muted);
+}
+
+function updateSoundButtonUI(isAudible) {
+  const icon = document.getElementById("soundIcon");
+  const text = document.getElementById("soundText");
+  if (!icon || !text) return;
+  if (isAudible) {
+    icon.className = "fa-solid fa-volume-high text-emerald-400";
+    text.innerText = "आवाज़ चालू है";
+  } else {
+    icon.className = "fa-solid fa-volume-xmark text-red-400";
+    text.innerText = "आवाज़ चालू करें";
+  }
+}
+
+/* ADMIN SPECIAL AD LOADER & SAVER */
+function loadAdminSpecialAd() {
+  db.ref("settings/admin_special_ad").on("value", snap => {
+    const data = snap.val();
+    const vid = document.getElementById("adminAutoplayVideo");
+    const title = document.getElementById("adminAdTitleShow");
+    const sub = document.getElementById("adminAdSubtitleShow");
+    const btn = document.getElementById("adminAdActionBtn");
+
+    if (data && vid) {
+      if (data.title) title.innerText = data.title;
+      if (data.sub) sub.innerText = data.sub;
+      if (data.actionLink) btn.href = data.actionLink;
+      if (data.videoUrl) {
+        vid.src = data.videoUrl;
+        vid.load();
+        vid.play().catch(() => {
+          vid.muted = true;
+          vid.play();
+        });
+      }
+    }
+  });
+}
+
+document.getElementById("adminAdVideoFileInput").addEventListener("change", function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  readVideoFileAsBase64(file, b64 => {
+    adminSpecialVideoBase64 = b64;
+    const prev = document.getElementById("adminAdVideoLocalPrev");
+    prev.src = b64;
+    document.getElementById("adminAdVideoPreviewBox").classList.remove("hidden");
+  });
+});
+
+function saveAdminSpecialAd() {
+  if (!isAdmin) return;
+  const title = document.getElementById("adminAdTitleInput").value.trim();
+  const sub = document.getElementById("adminAdSubInput").value.trim();
+  const videoUrl = document.getElementById("adminAdVideoUrlInput").value.trim();
+  const actionLink = document.getElementById("adminAdActionLinkInput").value.trim();
+  const finalVideo = adminSpecialVideoBase64 || videoUrl;
+
+  if (!finalVideo) {
+    return alert("कृपया गैलरी से वीडियो चुनें या वीडियो का लिंक भरें!");
+  }
+
+  const payload = {
+    title: title || "आवाज़ बुंदेलखंड न्यूज़ • स्पेशल विज्ञापन",
+    sub: sub || "प्रधान संपादक मयंक सिंह द्वारा विशेष रूप से प्रस्तुत",
+    videoUrl: finalVideo,
+    actionLink: actionLink || "javascript:shareArticle()",
+    updatedAt: Date.now()
+  };
+
+  db.ref("settings/admin_special_ad").set(payload).then(() => {
+    alert("एडमिन स्पेशल वीडियो Ad सफलतापूर्वक सेव हो गया! अब यह आवाज़ के साथ लाइव चलेगा।");
+  }).catch(err => alert("त्रुटि: " + err.message));
 }
 
 /* UNIVERSAL MEDIA EMBED */
@@ -822,6 +973,7 @@ return;
 }
 const reader = new FileReader();
 reader.onload = e => callback(e.target.result);
+reader.onerror = () => alert("वीडियो फ़ाइल लोड करने में समस्या हुई।");
 reader.readAsDataURL(file);
 }
 
@@ -1853,6 +2005,7 @@ targetBtn.classList.remove("border-transparent", "text-gray-500");
 
 /* INITIALIZE */
 loadNewsFeed();
+loadAdminSpecialAd();
 auth.onAuthStateChanged(user=>{
 if(user){
 currentUser=user;
