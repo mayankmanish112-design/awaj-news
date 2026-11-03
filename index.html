@@ -99,7 +99,7 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 
 <main class="max-w-4xl mx-auto p-4 flex-grow w-full">
 
-<!-- ================= USER AD BOOKING SECTION ================= -->
+<!-- ================= 1. USER AD BOOKING SECTION ================= -->
 <section id="userAdSection" class="hidden bg-white p-5 rounded-2xl shadow-lg border-2 border-amber-400 space-y-4 mb-4">
 <div class="border-b pb-2 flex justify-between items-center">
 <div>
@@ -225,7 +225,7 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 </div>
 </section>
 
-<!-- ================= MAIN FEED SECTION ================= -->
+<!-- ================= 2. MAIN FEED SECTION ================= -->
 <section id="feedSection" class="space-y-4">
 
 <!-- DIRECT PROMINENT USER AD PROMOTION BANNER -->
@@ -242,7 +242,7 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
   <span class="bg-white text-slate-900 text-[10px] font-black px-2.5 py-1 rounded-full shadow-sm shrink-0">बुक करें</span>
 </div>
 
-<!-- ================= SPECIAL ADMIN AUTO-PLAY VIDEO AD (INITIAL STATE HIDDEN, ONLY SHOWS WHEN SET) ================= -->
+<!-- ================= SPECIAL ADMIN AUTO-PLAY VIDEO AD ================= -->
 <div id="adminHouseAdCard" class="hidden bg-gradient-to-br from-[#001D4A] via-[#002D62] to-[#8B0000] p-3 rounded-3xl border-2 border-amber-400 shadow-xl space-y-2 text-white">
   <div class="flex justify-between items-center border-b border-white/20 pb-1.5">
     <div class="flex items-center gap-2">
@@ -260,14 +260,12 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
     </span>
   </div>
 
-  <!-- Video Player With Auto-Play & Sound Trigger (No Hardcoded Demo Video) -->
   <div class="w-full rounded-2xl overflow-hidden bg-black shadow-inner border border-white/10 relative">
     <video id="adminAutoplayVideo" autoplay loop playsinline controls class="w-full h-auto max-h-[380px] object-contain mx-auto">
       <source id="adminVideoSource" src="" type="video/mp4">
       आपका ब्राउज़र वीडियो समर्थित नहीं करता।
     </video>
     
-    <!-- Sound Status / Quick Unmute Button -->
     <button type="button" id="soundToggleBtn" onclick="toggleAdSound()" class="absolute top-2 right-2 bg-black/75 hover:bg-black text-amber-300 font-bold px-2.5 py-1 rounded-full text-[10px] flex items-center gap-1 shadow-md border border-amber-400/50 backdrop-blur-sm z-20">
       <i id="soundIcon" class="fa-solid fa-volume-xmark text-red-400"></i> <span id="soundText">आवाज़ चालू करें</span>
     </button>
@@ -291,7 +289,7 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 </div>
 
 <div id="shortsBarContainer" class="flex gap-2.5 overflow-x-auto no-scrollbar py-1">
-<p class="text-[11px] text-gray-400 py-2">शॉर्ट वीडियो लोड हो रहे हैं...</p>
+<p class="text-[10px] text-gray-400 py-2">कोई शॉर्ट वीडियो उपलब्ध नहीं है।</p>
 </div>
 </div>
 
@@ -307,12 +305,12 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 </div>
 
 <div id="newsFeedList" class="space-y-4">
-<p class="text-center text-xs text-gray-400 py-8">समाचार लोड हो रहे हैं...</p>
+<p class="text-center text-xs text-gray-400 py-8 font-bold">समाचार लोड हो रहे हैं...</p>
 </div>
 
 </section>
 
-<!-- ================= REPORTER NEWS POST SECTION ================= -->
+<!-- ================= 3. REPORTER NEWS POST SECTION ================= -->
 <section id="reporterSection" class="hidden bg-white p-5 rounded-2xl shadow border space-y-3">
 <h3 class="text-sm font-bold border-b pb-2">नई ख़बर दर्ज करें</h3>
 
@@ -377,7 +375,7 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 </button>
 </section>
 
-<!-- ================= SHORT VIDEO POST SECTION ================= -->
+<!-- ================= 4. SHORT VIDEO POST SECTION ================= -->
 <section id="shortsPostSection" class="hidden bg-white p-5 rounded-2xl shadow border space-y-3">
 <div class="border-b pb-2 flex justify-between items-center">
 <h3 class="text-sm font-bold text-gray-900 flex items-center gap-1.5">
@@ -419,7 +417,7 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 </button>
 </section>
 
-<!-- ================= REPORTER WALLET ================= -->
+<!-- ================= 5. REPORTER WALLET ================= -->
 <section id="walletSection" class="hidden space-y-4">
 <div class="bg-gradient-to-r from-red-800 to-red-600 text-white p-5 rounded-2xl shadow">
 <span class="text-xs">स्वीकृत मानदेय (₹30 प्रति खबर)</span>
@@ -434,7 +432,7 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 </div>
 </section>
 
-<!-- ================= ADMIN REVIEW ================= -->
+<!-- ================= 6. ADMIN REVIEW ================= -->
 <section id="adminSection" class="hidden bg-white p-4 rounded-xl border space-y-4">
 <h3 class="text-sm font-bold border-b pb-2">
 <i class="fa-solid fa-list-check text-red-600"></i>
@@ -445,7 +443,7 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 </div>
 </section>
 
-<!-- ================= MANAGE ADS & REVENUE (ADMIN WITH EDIT & DELETE & OWN AD SETUP) ================= -->
+<!-- ================= 7. MANAGE ADS & REVENUE ================= -->
 <section id="manageAdsSection" class="hidden bg-white p-5 rounded-2xl border space-y-5">
 <div class="border-b pb-2 flex justify-between items-center">
 <div>
@@ -461,7 +459,7 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 </div>
 </div>
 
-<!-- ================= ADMIN'S OWN SPECIAL AD CONTROLS ================= -->
+<!-- ADMIN'S OWN SPECIAL AD CONTROLS -->
 <div class="bg-gradient-to-r from-amber-50 to-red-50 border-2 border-amber-400 p-4 rounded-2xl space-y-3">
 <div class="flex items-center justify-between border-b border-amber-300 pb-1.5">
   <h4 class="text-xs font-black text-slate-900 flex items-center gap-1.5">
@@ -513,7 +511,7 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 </div>
 </div>
 
-<!-- 1. PENDING USER ADS (WITH PAYMENT SCREENSHOT) -->
+<!-- PENDING USER ADS -->
 <div class="space-y-2">
 <h4 class="text-xs font-bold text-slate-900 flex items-center justify-between">
 <span>यूज़र द्वारा भेजे गए लंबित विज्ञापन (पेमेंट स्क्रीनशॉट चेक करें)</span>
@@ -524,7 +522,7 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 </div>
 </div>
 
-<!-- 2. ACTIVE LIVE ADS (WITH EDIT & DELETE) -->
+<!-- ACTIVE LIVE ADS -->
 <div class="pt-4 border-t space-y-2">
 <h4 class="text-xs font-bold text-slate-900">वर्तमान सक्रिय विज्ञापन (लाइव स्क्रीन पर चल रहे हैं)</h4>
 <div id="activeAdsListContainer" class="space-y-2">
@@ -533,7 +531,7 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 </div>
 </section>
 
-<!-- ================= MANAGE REPORTERS ================= -->
+<!-- ================= 8. MANAGE REPORTERS ================= -->
 <section id="manageReportersSection" class="hidden bg-white p-5 rounded-2xl border space-y-5">
 <h3 class="text-sm font-bold border-b pb-2">
 <i class="fa-solid fa-user-plus text-red-600"></i>
@@ -569,7 +567,7 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 
 </main>
 
-<!-- EDIT AD MODAL (ADMIN ONLY) -->
+<!-- EDIT AD MODAL -->
 <div id="editAdModal" class="fixed inset-0 bg-black/80 z-[1000000] flex items-center justify-center p-4 hidden">
 <div class="bg-white rounded-2xl p-5 max-w-sm w-full space-y-3">
 <div class="flex justify-between items-center border-b pb-2">
@@ -600,7 +598,7 @@ class="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shadow-s
 </div>
 </div>
 
-<!-- EDIT NEWS MODAL (ADMIN ONLY) -->
+<!-- EDIT NEWS MODAL -->
 <div id="editNewsModal" class="fixed inset-0 bg-black/80 z-[1000000] flex items-center justify-center p-4 hidden">
 <div class="bg-white rounded-2xl p-5 max-w-lg w-full space-y-3">
 <div class="flex justify-between items-center border-b pb-2">
@@ -806,7 +804,7 @@ function enableAudioOnFirstTouch() {
       audioEnabledByUser = true;
       updateSoundButtonUI(true);
     }).catch(e => {
-      // Browser restriction retry
+      // Browser auto restriction
     });
   }
 }
@@ -833,7 +831,7 @@ function updateSoundButtonUI(isAudible) {
   }
 }
 
-/* ADMIN SPECIAL AD LOADER (ONLY SHOWS WHEN ADMIN SETS IT) */
+/* ADMIN SPECIAL AD LOADER */
 function loadAdminSpecialAd() {
   db.ref("settings/admin_special_ad").on("value", snap => {
     const data = snap.val();
@@ -843,7 +841,6 @@ function loadAdminSpecialAd() {
     const sub = document.getElementById("adminAdSubtitleShow");
     const btn = document.getElementById("adminAdActionBtn");
 
-    // Agar Admin ne Ad nahi lagaya ya delete kar diya hai, toh chupa rahega
     if (!data || !data.videoUrl) {
       if (adCard) adCard.classList.add("hidden");
       if (vid) {
@@ -853,7 +850,6 @@ function loadAdminSpecialAd() {
       return;
     }
 
-    // Sirf Admin ka lagaya hua Ad hi dikhega
     if (adCard) adCard.classList.remove("hidden");
     if (title) title.innerText = data.title || "आवाज़ बुंदेलखंड न्यूज़ • स्पेशल विज्ञापन";
     if (sub) sub.innerText = data.sub || "प्रधान संपादक मयंक सिंह द्वारा विशेष रूप से प्रस्तुत";
@@ -867,6 +863,8 @@ function loadAdminSpecialAd() {
         vid.play();
       });
     }
+  }, err => {
+    console.error("Admin Ad Load Error:", err);
   });
 }
 
@@ -1357,6 +1355,8 @@ container.appendChild(adCard);
 });
 
 container.classList.remove("hidden");
+}, err => {
+  console.error("Ads Fetch Error:", err);
 });
 }
 
@@ -1794,34 +1794,253 @@ function shareArticle() {
   }
 }
 
-/* NEWS FEED & TICKER */
+/* NEWS FEED & TICKER (WITH SAFE ERROR HANDLING) */
 function loadNewsFeed(){
-renderPublicAds();
+  renderPublicAds();
 
-db.ref("news_articles").orderByChild("status").equalTo("approved").on("value",snap=>{
-const list=document.getElementById("newsFeedList");
-const shortsBar=document.getElementById("shortsBarContainer");
-const tickerText=document.getElementById("liveTickerText");
+  const list = document.getElementById("newsFeedList");
+  const shortsBar = document.getElementById("shortsBarContainer");
+  const tickerText = document.getElementById("liveTickerText");
 
-list.innerHTML="";
-shortsBar.innerHTML="";
+  db.ref("news_articles").orderByChild("status").equalTo("approved").on("value", snap => {
+    list.innerHTML = "";
+    shortsBar.innerHTML = "";
 
-const articles=snap.val();
-if(!articles){
-list.innerHTML="<p class='text-center text-gray-400 py-8'>कोई समाचार उपलब्ध नहीं है।</p>";
-shortsBar.innerHTML="<p class='text-[10px] text-gray-400 py-2'>कोई शॉर्ट वीडियो उपलब्ध नहीं है।</p>";
-tickerText.innerText = "आवाज़ बुंदेलखंड न्यूज़: निष्पक्ष एवं सटीक डिजिटल पत्रकारिता • हमीरपुर";
-return;
+    const articles = snap.val();
+    if (!articles) {
+      list.innerHTML = "<p class='text-center text-gray-400 py-8 text-xs font-bold'>वर्तमान में कोई नई खबर उपलब्ध नहीं है।</p>";
+      shortsBar.innerHTML = "<p class='text-[10px] text-gray-400 py-2'>कोई शॉर्ट वीडियो उपलब्ध नहीं है।</p>";
+      if (tickerText) tickerText.innerText = "आवाज़ बुंदेलखंड न्यूज़: निष्पक्ष एवं सटीक डिजिटल पत्रकारिता • हमीरपुर";
+      return;
+    }
+
+    let shortsFound = false;
+    let tickerHeadlines = [];
+
+    Object.entries(articles)
+      .sort((a,b) => (b[1].timestamp || 0) - (a[1].timestamp || 0))
+      .forEach(([key, item]) => {
+        tickerHeadlines.push(`${item.location}: ${item.title}`);
+
+        if (item.videoUrl && item.isShorts) {
+          shortsFound = true;
+          const shortItem = document.createElement("div");
+          shortItem.className = "shrink-0 w-28 h-40 bg-slate-900 rounded-xl relative overflow-hidden shadow cursor-pointer border border-slate-700 flex flex-col justify-between p-2";
+          shortItem.onclick = () => openShortsModal(item.title, item.videoUrl);
+          shortItem.innerHTML = `
+            <span class="bg-red-600 text-white text-[8px] font-bold px-1.5 py-0.5 rounded w-max">50s शॉर्ट</span>
+            <div class="text-white text-center my-auto"><i class="fa-solid fa-play text-xl opacity-80"></i></div>
+            <div>
+              <p class="text-[10px] font-bold text-white line-clamp-2 leading-tight">${escapeHTML(item.title)}</p>
+              <span class="text-[8px] text-amber-300 font-semibold">${escapeHTML(item.reporterName)}</span>
+            </div>
+          `;
+          shortsBar.appendChild(shortItem);
+        }
+
+        const card = document.createElement("div");
+        card.className = "bg-white p-4 rounded-xl border shadow-sm space-y-3 relative";
+
+        let media = "";
+        if (item.imageUrl) {
+          media += `<img src="${item.imageUrl}" class="w-full rounded-lg max-h-96 object-cover mb-2">`;
+        }
+        if (item.videoUrl) {
+          media += renderUniversalMediaEmbed(item.videoUrl);
+        }
+
+        let adminControlButtons = "";
+        if (isAdmin) {
+          adminControlButtons = `
+            <div class="flex gap-2 pt-2 border-t mt-2">
+              <button class="btnEdit bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-3 py-1.5 rounded text-xs flex items-center gap-1">
+                <i class="fa-solid fa-pen-to-square"></i> एडिट करें
+              </button>
+              <button class="btnDelete bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-1.5 rounded text-xs flex items-center gap-1">
+                <i class="fa-solid fa-trash"></i> डिलीट करें
+              </button>
+            </div>
+          `;
+        }
+
+        card.innerHTML = `
+          <div class="flex items-center gap-2 border-b pb-2">
+            <img src="${item.reporterPhoto || DEFAULT_PHOTO}" class="w-10 h-10 rounded-full object-cover border border-red-500">
+            <div class="flex-1">
+              <strong class="text-xs text-slate-900">${escapeHTML(item.reporterName)}</strong>
+              <div class="text-[10px] text-red-700 font-bold">${item.reporterRole === "admin" ? "प्रधान संपादक" : "रिपोर्टर"}</div>
+              <div class="text-[10px] text-gray-500">${escapeHTML(item.location)}</div>
+            </div>
+            <span class="text-[10px] bg-red-50 text-red-700 px-2 py-1 rounded font-bold">${escapeHTML(item.category)}</span>
+          </div>
+
+          <h2 class="text-base font-bold text-slate-900 leading-snug">${escapeHTML(item.title)}</h2>
+          ${media}
+          <p class="text-sm text-gray-700 whitespace-pre-line leading-relaxed">${escapeHTML(item.content)}</p>
+
+          <div class="flex justify-between items-center border-t pt-3 text-[10px] text-gray-400">
+            <span>${new Date(item.timestamp).toLocaleDateString("hi-IN")}</span>
+            <span>आवाज़ बुंदेलखंड न्यूज़</span>
+          </div>
+
+          <div class="flex flex-wrap gap-2 pt-2">
+            <button class="shareBtn bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg text-xs font-bold transition">
+              <i class="fa-solid fa-share-nodes"></i> शेयर करें
+            </button>
+            <button class="whatsappBtn bg-green-700 hover:bg-green-800 text-white px-3 py-2 rounded-lg text-xs font-bold transition">
+              <i class="fa-brands fa-whatsapp"></i> WhatsApp
+            </button>
+          </div>
+          ${adminControlButtons}
+        `;
+
+        const appUrl = "https://play.google.com/store/apps/details?id=YOUR_APP_PACKAGE_NAME";
+        const currentUrl = location.href.split("#")[0];
+        const shareText = `${item.title}\n\nपूरी खबर पढ़ें:\n${currentUrl}\n\n📲 ताज़ा खबरों के लिए 'आवाज़ बुंदेलखंड' ऐप डाउनलोड करें:\n${appUrl}`;
+
+        card.querySelector(".shareBtn").onclick = async () => {
+          try {
+            if (navigator.share) {
+              await navigator.share({ title: item.title, text: shareText, url: currentUrl });
+            } else {
+              await navigator.clipboard.writeText(shareText);
+              alert("खबर का विवरण और लिंक कॉपी हो गया।");
+            }
+          } catch(err) { console.log(err); }
+        };
+
+        card.querySelector(".whatsappBtn").onclick = () => {
+          window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`, "_blank");
+        };
+
+        if (isAdmin) {
+          card.querySelector(".btnEdit").onclick = () => openEditArticleModal(key, item.title, item.location, item.category, item.videoUrl, item.content);
+          card.querySelector(".btnDelete").onclick = () => deleteArticleByAdmin(key);
+        }
+
+        list.appendChild(card);
+      });
+
+    if (tickerHeadlines.length > 0 && tickerText) {
+      tickerText.innerText = tickerHeadlines.join(" ••• ") + " ••• आवाज़ बुंदेलखंड न्यूज़ नेटवर्क";
+    }
+
+    if (!shortsFound) {
+      shortsBar.innerHTML = "<p class='text-[10px] text-gray-400 py-2'>अभी कोई 50-सेकेंड रील्स उपलब्ध नहीं हैं।</p>";
+    }
+  }, error => {
+    console.error("Firebase Read Error:", error);
+    list.innerHTML = "<p class='text-center text-red-500 py-8 text-xs font-bold'>डेटाबेस से कनेक्ट नहीं हो पा रहा है। कृपया Firebase Rules चेक करें।</p>";
+    shortsBar.innerHTML = "<p class='text-[10px] text-red-400 py-2'>लोड नहीं हो सका।</p>";
+  });
 }
 
-let shortsFound = false;
-let tickerHeadlines = [];
+/* ADMIN PENDING NEWS REVIEW */
+function loadPendingNews(){
+db.ref("news_articles").orderByChild("status").equalTo("pending").on("value",snap=>{
+const list=document.getElementById("pendingNewsList");
+list.innerHTML="";
+const articles=snap.val() || {};
 
-Object.entries(articles)
-.sort((a,b)=>(b[1].timestamp||0)-(a[1].timestamp||0))
-.forEach(([key,item])=>{
+Object.entries(articles).forEach(([key,item])=>{
+const card=document.createElement("div");
+card.className="bg-gray-50 border rounded-lg p-3 space-y-2";
 
-tickerHeadlines.push(`${item.location}: ${item.title}`);
+let vidPreview = "";
+if (item.videoUrl) {
+vidPreview = renderUniversalMediaEmbed(item.videoUrl);
+}
 
-if (item.videoUrl && item.isShorts) {
-shortsFound
+card.innerHTML=`
+<strong>${escapeHTML(item.title)}</strong>
+${vidPreview}
+<p class="text-xs">${escapeHTML(item.content)}</p>
+<p class="text-xs text-gray-500">संवाददाता: ${escapeHTML(item.reporterName)} (${escapeHTML(item.location)})</p>
+<div class="flex gap-2">
+<button class="approve bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded text-xs font-bold">स्वीकृत करें (Live करें)</button>
+<button class="reject bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-xs font-bold">अस्वीकार करें</button>
+</div>
+`;
+
+card.querySelector(".approve").onclick=()=>reviewArticle(key,"approved");
+card.querySelector(".reject").onclick=()=>reviewArticle(key,"rejected");
+list.appendChild(card);
+});
+
+if(!Object.keys(articles).length){
+list.innerHTML="कोई खबर समीक्षा के लिए लंबित नहीं है।";
+}
+});
+}
+
+function reviewArticle(key,status){
+if(!isAdmin)return;
+db.ref("news_articles/"+key).update({status:status})
+.then(()=>alert(status==="approved"?"खबर प्रकाशित हो गई।":"खबर अस्वीकार कर दी गई।"))
+.catch(err=>alert(err.message));
+}
+
+/* REPORTER WALLET */
+function loadReporterWallet(){
+if(!currentUser)return;
+document.getElementById("dispReporterAddress").innerText=myProfile.address || "दर्ज नहीं";
+document.getElementById("dispReporterPayment").innerText=myProfile.paymentDetail || "दर्ज नहीं";
+
+db.ref("news_articles").orderByChild("reporterPhone").equalTo(currentUser.phoneNumber).on("value",snap=>{
+let count=0;
+Object.values(snap.val() || {}).forEach(item=>{
+if(item.status==="approved")count++;
+});
+document.getElementById("reporterApprovedCount").innerText=count;
+document.getElementById("reporterBalance").innerText=count*30;
+});
+}
+
+/* SAFE TAB SWITCHING */
+function switchTab(tab){
+if((tab==="admin" || tab==="manageAds" || tab==="manageReporters") && !isAdmin)return;
+if((tab==="reporter" || tab==="shortsPost" || tab==="wallet") && !currentUser)return;
+
+const sectionMap = {
+"feed": "feedSection",
+"reporter": "reporterSection",
+"shortsPost": "shortsPostSection",
+"wallet": "walletSection",
+"admin": "adminSection",
+"manageAds": "manageAdsSection",
+"manageReporters": "manageReportersSection"
+};
+
+Object.keys(sectionMap).forEach(key => {
+const sec = document.getElementById(sectionMap[key]);
+if (sec) sec.classList.add("hidden");
+const btn = document.getElementById("tab" + key.charAt(0).toUpperCase() + key.slice(1));
+if (btn) {
+btn.classList.remove("border-red-700", "text-red-700");
+btn.classList.add("border-transparent", "text-gray-500");
+}
+});
+
+const targetSec = document.getElementById(sectionMap[tab]);
+if (targetSec) targetSec.classList.remove("hidden");
+
+const targetBtn = document.getElementById("tab" + tab.charAt(0).toUpperCase() + tab.slice(1));
+if (targetBtn) {
+targetBtn.classList.add("border-red-700", "text-red-700");
+targetBtn.classList.remove("border-transparent", "text-gray-500");
+}
+}
+
+/* INITIALIZE */
+loadNewsFeed();
+loadAdminSpecialAd();
+auth.onAuthStateChanged(user=>{
+if(user){
+currentUser=user;
+evaluateRoleAndSetupUI(user);
+}
+});
+</script>
+
+</body>
+</html>
